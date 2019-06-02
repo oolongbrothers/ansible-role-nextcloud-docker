@@ -4,9 +4,9 @@
 
 - name: Ensure the Nextcloud app container is present.
   docker_container:
-    name: "{{ nextcloud_app_container_name }}"
-    image: "{{ nextcloud_app_container_version }}"
-    volumes: "{{ nextcloud_app_container_volumes }}"
     env: "{{ nextcloud_app_container_env | items2dict }}"
+    image: "{{ nextcloud_app_container_image }}"
+    name: "{{ nextcloud_app_container_name }}"
     restart: "{{ nextcloud_app_container_restart }}"
     state: "{{ nextcloud_app_container_state }}"
+    volumes: "{{ nextcloud_app_container_volumes }}"
