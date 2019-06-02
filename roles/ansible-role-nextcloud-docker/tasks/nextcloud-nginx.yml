@@ -1,23 +1,12 @@
 ---
-# Tasks related to nextcloud-nginx container (proxy).
+# Tasks related to nextcloud-nginx container (proxy) for
+# ansible-role-nextcloud-docker.
 
 - name: Ensure the Nginx proxy container is present.
   docker_container:
-    name: "nextcloud-proxy"
-    image: "jwilder/nginx-proxy:alpine"
-    labels:
-      com.github.jrcs.letsencrypt_nginx_proxy_companion.nginx_proxy: "true"
-    # networks:
-    # - name: "nextcloud_network"
-    ports:
-     - "80:80"
-     - "443:443"
-    restart: true
-    state: started
-    volumes:
-      - "./proxy/conf.d:/etc/nginx/conf.d:rw"
-      - "./proxy/vhost.d:/etc/nginx/vhost.d:rw"
-      - "./proxy/html:/usr/share/nginx/html:rw"
-      - "./proxy/certs:/etc/nginx/certs:ro"
-      - "/etc/localtime:/etc/localtime:ro"
-      - "/var/run/docker.sock:/tmp/docker.sock:ro"
+    image: "{{ nextcloud_nginx_container_image }}"
+    name: "{{ nextcloud_nginx_container_name }}"
+    ports: "{{ nextcloud_nginx_container_ports }}"
+    restart: "{{ nextcloud_nginx_container_restart }}"
+    state: "{{ nextcloud_nginx_container_state }}"
+    volumes: "{{ nextcloud_nginx_container_volumes }}"
