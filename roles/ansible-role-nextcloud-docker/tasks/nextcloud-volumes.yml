@@ -1,11 +1,9 @@
 ---
-# Tasks related to nextcloud volumes.
+# Tasks related to nextcloud volumes for ansible-role-nextcloud-docker.
 
 - name: Ensure required volumes are present.
   docker_volume:
     name: "{{ volume }}"
-  loop:
-    - "nextcloud"
-    - "db"
+  loop: "{{ nextcloud_nextcloud_volumes }}"
   loop_control:
     loop_var: volume
