@@ -5,7 +5,6 @@
 - name: Ensure the Mariadb container is present.
   docker_container:
     name: "{{ nextcloud_mariadb_container_name }}"
-    # hostname: "db"
     image: "{{ nextcloud_mariadb_container_image }}"
     volumes: "{{ nextcloud_mariadb_container_volumes }}"
     env: "{{ nextcloud_mariadb_container_env | items2dict }}"
