@@ -1,20 +1,12 @@
 ---
-# Tasks related to nextcloud-app container (Nextcloud itself).
+# Tasks related to nextcloud-app container (Nextcloud itself) for
+# ansible-role-nextcloud-docker.
 
-- name: Ensure the Nextcloud container is present.
+- name: Ensure the Nextcloud app container is present.
   docker_container:
-    name: "nextcloud-app"
-    image: "nextcloud:latest"
-    # networks:
-    #  - name: "nextcloud_network"
-    volumes:
-      - "nextcloud:/var/www/html"
-      - "./app/config:/var/www/html/config"
-      - "./app/custom_apps:/var/www/html/custom_apps"
-      - "./app/data:/var/www/html/data"
-      - "./app/themes:/var/www/html/themes"
-      - "/etc/localtime:/etc/localtime:ro"
-    env:
-      VIRTUAL_HOST: "tibiacarpet.local"
-    restart: true
-    state: started
+    name: "{{ nextcloud_app_container_name }}"
+    image: "{{ nextcloud_app_container_version }}"
+    volumes: "{{ nextcloud_app_container_volumes }}"
+    env: "{{ nextcloud_app_container_env | items2dict }}"
+    restart: "{{ nextcloud_app_container_restart }}"
+    state: "{{ nextcloud_app_container_state }}"
