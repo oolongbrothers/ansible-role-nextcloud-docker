@@ -1,6 +1,8 @@
 ---
 # defaults file for ansible-role-nextcloud-docker
 
+# Nextcloud containers.
+#
 # nextcloud_app_container vars.
 nextcloud_app_container_env:
   - key: "VIRTUAL_HOST"
@@ -50,3 +52,12 @@ nextcloud_nginx_container_volumes:
   - "./proxy/certs:/etc/nginx/certs:ro"
   - "/etc/localtime:/etc/localtime:ro"
   - "/var/run/docker.sock:/tmp/docker.sock:ro"
+
+# Nextcloud network.
+#
+# nextcloud_network vars.
+nextcloud_nextcloud_network_name: "nextcloud_network"
+nextcloud_nextcloud_connected:
+  - "{{ nextcloud_app_container_name }}"
+  - "{{ nextcloud_mariadb_container_name }}"
+  - "{{ nextcloud_nginx_container_name }}"
