@@ -1,20 +1,13 @@
 ---
-# Tasks related to nextcloud-mariadb container (db server).
+# Tasks related to nextcloud-mariadb container (db server) for
+# ansible-role-nextcloud-docker.
 
 - name: Ensure the Mariadb container is present.
   docker_container:
-    name: "nextcloud-mariadb"
-    hostname: "db"
-    image: "mariadb"
-    # networks:
-    #   - name: "nextcloud_network"
-    volumes:
-      - "db:/var/lib/mysql"
-      - "/etc/localtime:/etc/localtime:ro"
-    env:
-      MYSQL_ROOT_PASSWORD: "root"
-      MYSQL_PASSWORD: "mysql"
-      MYSQL_DATABASE: "nextcloud"
-      MYSQL_USER: "nextcloud"
-    restart: true
-    state: started
+    name: "{{ nextcloud_mariadb_container_name }}"
+    # hostname: "db"
+    image: "{{ nextcloud_mariadb_container_image }}"
+    volumes: "{{ nextcloud_mariadb_container_volumes }}"
+    env: "{{ nextcloud_mariadb_container_env | items2dict }}"
+    restart: "{{ nextcloud_mariadb_container_restart }}"
+    state: "{{ nextcloud_mariadb_container_state }}"

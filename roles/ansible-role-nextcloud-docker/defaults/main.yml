@@ -17,6 +17,24 @@ nextcloud_app_container_volumes:
   - "./app/themes:/var/www/html/themes"
   - "/etc/localtime:/etc/localtime:ro"
 
+# nextcloud_mariadb_container vars.
+nextcloud_mariadb_container_env:
+  - key: "MYSQL_ROOT_PASSWORD"
+    value: "root"
+  - key: "MYSQL_PASSWORD"
+    value: "mysql"
+  - key: "MYSQL_DATABASE"
+    value: "nextcloud"
+  - key: "MYSQL_USER"
+    value: "nextcloud"
+nextcloud_mariadb_container_image: "mariadb"
+nextcloud_mariadb_container_name: "nextcloud-mariadb"
+nextcloud_mariadb_container_restart: true
+nextcloud_mariadb_container_state: started
+nextcloud_mariadb_container_volumes:
+  - "db:/var/lib/mysql"
+  - "/etc/localtime:/etc/localtime:ro"
+
 # nextcloud_nginx_container vars.
 nextcloud_nginx_container_image: "jwilder/nginx-proxy:alpine"
 nextcloud_nginx_container_name: "nextcloud-nginx"
