@@ -1,0 +1,20 @@
+---
+# Tasks related to nextcloud-mariadb container (db server).
+
+- name: Ensure the Mariadb container is present.
+  docker_container:
+    name: "nextcloud-mariadb"
+    hostname: "db"
+    image: "mariadb"
+    # networks:
+    #   - name: "nextcloud_network"
+    volumes:
+      - "db:/var/lib/mysql"
+      - "/etc/localtime:/etc/localtime:ro"
+    env:
+      MYSQL_ROOT_PASSWORD: "root"
+      MYSQL_PASSWORD: "mysql"
+      MYSQL_DATABASE: "nextcloud"
+      MYSQL_USER: "nextcloud"
+    restart: true
+    state: started

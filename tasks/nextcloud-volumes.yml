@@ -1,0 +1,11 @@
+---
+# Tasks related to nextcloud volumes.
+
+- name: Ensure required volumes are present.
+  docker_volume:
+    name: "{{ volume }}"
+  loop:
+    - "nextcloud"
+    - "db"
+  loop_control:
+    loop_var: volume

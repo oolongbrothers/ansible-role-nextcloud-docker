@@ -1,0 +1,10 @@
+---
+# Tasks related to nextcloud_network (network).
+
+- name: Ensure we have a network for containers to share.
+  docker_network:
+    name: "nextcloud_network"
+    connected:
+      - "nextcloud-app"
+      - "nextcloud-mariadb"
+      - "nextcloud-proxy"
