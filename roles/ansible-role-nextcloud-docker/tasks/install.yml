@@ -3,7 +3,7 @@
 
 - name: sleep for 30 seconds and continue with play
   wait_for:
-    timeout: 30
+    timeout: 15
 
 - name: Check status of Nextcloud installation.
   shell: "{{ nextcloud_occ_prefix }} php occ status --output=json | tail -n1"
