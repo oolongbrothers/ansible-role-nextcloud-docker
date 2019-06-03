@@ -1,12 +1,33 @@
 ---
 # defaults file for ansible-role-nextcloud-docker
 
+# To-do:
+#
+# - Non-docker volume for nextcloud app.
+# - Optional letsencrypt (ignore letsencrypt tasks if VIRTUAL_HOST
+#   contains "local").
+# - Molecule testing.
+
+# Nextcloud config.
+#
+# nextcloud_config vars.
+nextcloud_config_domain: "example.local"
+nextcloud_config_db_root_password: "root"
+nextcloud_config_db_database: "nextcloud"
+nextcloud_config_db_user: "nextcloud"
+nextcloud_config_db_password: "mysql"
+nextcloud_config_trusted_domains:
+  - "localhost"
+  - "{{ nextcloud_config_domain }}"
+nextcloud_config_admin_user: "admin"
+nextcloud_config_admin_password: "pass"
+
 # Nextcloud containers.
 #
 # nextcloud_app_container vars.
 nextcloud_app_container_env:
   - key: "VIRTUAL_HOST"
-    value: "example.local"
+    value: "{{ nextcloud_config_domain }}"
 nextcloud_app_container_image: "nextcloud:latest"
 nextcloud_app_container_name: "nextcloud-app"
 nextcloud_app_container_restart: true
@@ -20,15 +41,6 @@ nextcloud_app_container_volumes:
   - "/etc/localtime:/etc/localtime:ro"
 
 # nextcloud_mariadb_container vars.
-nextcloud_mariadb_container_env:
-  - key: "MYSQL_ROOT_PASSWORD"
-    value: "root"
-  - key: "MYSQL_PASSWORD"
-    value: "mysql"
-  - key: "MYSQL_DATABASE"
-    value: "nextcloud"
-  - key: "MYSQL_USER"
-    value: "nextcloud"
 nextcloud_mariadb_container_image: "mariadb"
 nextcloud_mariadb_container_name: "nextcloud-mariadb"
 nextcloud_mariadb_container_restart: true
@@ -36,6 +48,17 @@ nextcloud_mariadb_container_state: started
 nextcloud_mariadb_container_volumes:
   - "db:/var/lib/mysql"
   - "/etc/localtime:/etc/localtime:ro"
+nextcloud_mariadb_container_env:
+  - key: "MYSQL_ROOT_PASSWORD"
+    value: "{{ nextcloud_config_db_root_password }}"
+  - key: "MYSQL_PASSWORD"
+    value: "{{ nextcloud_config_db_password }}"
+  - key: "MYSQL_DATABASE"
+    value: "{{ nextcloud_config_db_database }}"
+  - key: "MYSQL_USER"
+    value: "{{ nextcloud_config_db_user }}"
+  - key: "MYSQL_HOST"
+    value: "{{ nextcloud_mariadb_container_name }}"
 
 # nextcloud_nginx_container vars.
 nextcloud_nginx_container_image: "jwilder/nginx-proxy:alpine"
@@ -68,3 +91,16 @@ nextcloud_nextcloud_network_connected:
 nextcloud_nextcloud_volumes:
   - "nextcloud"
   - "mariadb"
+
+# Nextcloud cli.
+#
+# Nextcloud cli vars.
+nextcloud_occ_prefix: >
+  docker exec --user www-data {{ nextcloud_app_container_name }}
+nextcloud_occ_install: >
+  php occ maintenance:install
+  --admin-user "{{ nextcloud_config_admin_user }}"
+  --admin-pass "{{ nextcloud_config_admin_password }}"
+nextcloud_occ_trusted_domains: >
+  php occ config:system:set trusted_domains
+  --value="{{ nextcloud_config_trusted_domains }}"
