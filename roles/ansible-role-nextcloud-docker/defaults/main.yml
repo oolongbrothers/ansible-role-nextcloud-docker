@@ -6,6 +6,7 @@
 # - Non-docker volume for nextcloud app.
 # - Optional letsencrypt (ignore letsencrypt tasks if VIRTUAL_HOST
 #   contains "local").
+# - Turn on encryption.
 # - Molecule testing.
 
 # Nextcloud config.
@@ -95,12 +96,11 @@ nextcloud_nextcloud_volumes:
 # Nextcloud cli.
 #
 # Nextcloud cli vars.
-nextcloud_occ_prefix: >
-  docker exec --user www-data {{ nextcloud_app_container_name }}
+nextcloud_occ_prefix: "docker exec --user www-data {{ nextcloud_app_container_name }}"
 nextcloud_occ_install: >
   php occ maintenance:install
-  --admin-user "{{ nextcloud_config_admin_user }}"
-  --admin-pass "{{ nextcloud_config_admin_password }}"
+  --admin-user="{{ nextcloud_config_admin_user }}"
+  --admin-pass="{{ nextcloud_config_admin_password }}"
 nextcloud_occ_trusted_domains: >
   php occ config:system:set trusted_domains
   --value="{{ nextcloud_config_trusted_domains }}"
