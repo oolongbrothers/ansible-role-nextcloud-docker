@@ -1,0 +1,6 @@
+---
+skip_list:
+  # Use shell only when shell functionality is required
+  - '305'
+  # Shells that use pipes should set the pipefail option
+  - '306'
