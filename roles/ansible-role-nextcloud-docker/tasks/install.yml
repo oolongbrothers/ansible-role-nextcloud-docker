@@ -1,0 +1,24 @@
+---
+# php occ installation tasks for ansible-role-nextcloud-docker.
+
+- name: sleep for 30 seconds and continue with play
+  wait_for:
+    timeout: 30
+
+- name: Check status of Nextcloud installation.
+  shell: "{{ nextcloud_occ_prefix }} php occ status --output=json | tail -n1"
+  register: nextcloud_raw_status
+
+- name: Store status.
+  set_fact:
+    nextcloud_status: "{{ nextcloud_raw_status.stdout | from_json }}"
+
+- name: Complete Nextcloud installation from cli.
+  shell: "{{ nextcloud_occ_prefix }} {{ nextcloud_occ_install }}"
+  become: true
+  when: "not nextcloud_status.installed"
+  no_log: true
+
+- name: Set trusted domain(s) for Nextcloud install.
+  shell: "{{ nextcloud_occ_prefix }} {{ nextcloud_occ_trusted_domains }}"
+  become: true

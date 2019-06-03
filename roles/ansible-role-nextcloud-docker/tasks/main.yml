@@ -49,3 +49,13 @@
         - network
   tags:
     - always
+
+- name: Complete Nextcloud install from cli.
+  include_tasks:
+    file: "tasks/install.yml"
+    apply:
+      tags:
+        - install
+        - nextcloud
+  tags:
+    - always
