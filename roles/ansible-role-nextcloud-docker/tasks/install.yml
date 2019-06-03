@@ -21,7 +21,7 @@
   no_log: true
 
 - name: Check trusted domains.
-  shell: "{{ nextcloud_occ_prefix }} php occ config:system:get trusted_domains | tail -n1"
+  shell: "{{ nextcloud_occ_prefix }} php occ config:system:get trusted_domains --output=json"
   register: nextcloud_raw_trusted_domains
   become: true
   changed_when: false
@@ -31,6 +31,16 @@
     nextcloud_trusted_domains: "{{ nextcloud_raw_trusted_domains.stdout }}"
 
 - name: Set trusted domain(s) for Nextcloud install.
-  shell: "{{ nextcloud_occ_prefix }} {{ nextcloud_occ_trusted_domains }}"
-  become: true
+  block:
+    - name: Remove trusted domains.
+      shell: "{{ nextcloud_occ_prefix }} php occ config:system:delete trusted_domains"
+
+    - name: Set specified trusted domains.
+      shell: "{{ nextcloud_occ_prefix }} php occ config:system:set trusted_domains {{ index }} --value='{{ domain }}'"
+      loop: "{{ nextcloud_config_trusted_domains }}"
+      loop_control:
+        loop_var: "domain"
+        index_var: "index"
+      become: true
+
   when: "nextcloud_trusted_domains != nextcloud_config_trusted_domains"
