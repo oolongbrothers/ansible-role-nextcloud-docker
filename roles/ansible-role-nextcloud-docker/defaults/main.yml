@@ -70,8 +70,8 @@ nextcloud_mariadb_container_env:
 nextcloud_nginx_container_image: "jwilder/nginx-proxy:alpine"
 nextcloud_nginx_container_name: "nextcloud-nginx"
 nextcloud_nginx_container_ports:
- - "80:80"
- - "443:443"
+  - "80:80"
+  - "443:443"
 nextcloud_nginx_container_restart: true
 nextcloud_nginx_container_state: started
 nextcloud_nginx_container_volumes:
