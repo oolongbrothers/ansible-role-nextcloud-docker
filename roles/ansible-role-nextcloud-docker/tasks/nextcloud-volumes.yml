@@ -4,6 +4,6 @@
 - name: Ensure required volumes are present.
   docker_volume:
     name: "{{ volume }}"
-  loop: "{{ nextcloud_nextcloud_volumes }}"
+  loop: "{{ nextcloud_volumes }}"
   loop_control:
     loop_var: volume

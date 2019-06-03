@@ -18,7 +18,7 @@
   shell: "{{ nextcloud_occ_prefix }} {{ nextcloud_occ_install }}"
   become: true
   when: "not nextcloud_status.installed"
-  no_log: true
+  no_log: false
 
 - name: Check trusted domains.
   shell: "{{ nextcloud_occ_prefix }} php occ config:system:get trusted_domains --output=json"
@@ -32,9 +32,14 @@
 
 - name: Set trusted domain(s) for Nextcloud install.
   block:
+    # As long as we're using array indecies to add each domain (see next task),
+    # we basically MUST remove all of them (e.g. if there were originally three
+    # trusted_domains, and the new list consisted of two, we could wind up with
+    # an unexpected entry in the array.
     - name: Remove trusted domains.
       shell: "{{ nextcloud_occ_prefix }} php occ config:system:delete trusted_domains"
 
+    # I don't know if there's a better way to do this or not...
     - name: Set specified trusted domains.
       shell: "{{ nextcloud_occ_prefix }} php occ config:system:set trusted_domains {{ index }} --value='{{ domain }}'"
       loop: "{{ nextcloud_config_trusted_domains }}"

@@ -4,5 +4,5 @@
 
 - name: Ensure we have a network for containers to share.
   docker_network:
-    name: "{{ nextcloud_nextcloud_network_name }}"
-    connected: "{{ nextcloud_nextcloud_network_connected }}"
+    name: "{{ nextcloud_network_name }}"
+    connected: "{{ nextcloud_network_connected }}"

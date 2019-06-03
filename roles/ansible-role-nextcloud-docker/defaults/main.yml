@@ -3,10 +3,14 @@
 
 # To-do:
 #
+# - Database settings are somehow wrong--sqlite is in use.
+# - Add prompt when default credentials used.
 # - Non-docker volume for nextcloud app.
 # - Optional letsencrypt (ignore letsencrypt tasks if VIRTUAL_HOST
 #   contains "local").
 # - Turn on encryption.
+# - Enable default encryption module.
+# - What needs to be done to update NC on Docker?
 # - Molecule testing.
 
 # Nextcloud config.
@@ -14,9 +18,10 @@
 # nextcloud_config vars.
 nextcloud_config_domain: "example.local"
 nextcloud_config_db_root_password: "root"
-nextcloud_config_db_database: "nextcloud"
-nextcloud_config_db_user: "nextcloud"
-nextcloud_config_db_password: "mysql"
+nextcloud_config_db_database: "mysql"
+nextcloud_config_db_database_name: "nextcloud"
+nextcloud_config_db_database_user: "nextcloud"
+nextcloud_config_db_database_password: "mysql"
 nextcloud_config_trusted_domains:
   - "localhost"
   - "{{ nextcloud_config_domain }}"
@@ -53,11 +58,11 @@ nextcloud_mariadb_container_env:
   - key: "MYSQL_ROOT_PASSWORD"
     value: "{{ nextcloud_config_db_root_password }}"
   - key: "MYSQL_PASSWORD"
-    value: "{{ nextcloud_config_db_password }}"
+    value: "{{ nextcloud_config_db_database_password }}"
   - key: "MYSQL_DATABASE"
-    value: "{{ nextcloud_config_db_database }}"
+    value: "{{ nextcloud_config_db_database_name }}"
   - key: "MYSQL_USER"
-    value: "{{ nextcloud_config_db_user }}"
+    value: "{{ nextcloud_config_db_database_user }}"
   - key: "MYSQL_HOST"
     value: "{{ nextcloud_mariadb_container_name }}"
 
@@ -80,8 +85,8 @@ nextcloud_nginx_container_volumes:
 # Nextcloud network.
 #
 # nextcloud_network vars.
-nextcloud_nextcloud_network_name: "nextcloud_network"
-nextcloud_nextcloud_network_connected:
+nextcloud_network_name: "nextcloud_network"
+nextcloud_network_connected:
   - "{{ nextcloud_app_container_name }}"
   - "{{ nextcloud_mariadb_container_name }}"
   - "{{ nextcloud_nginx_container_name }}"
@@ -89,7 +94,7 @@ nextcloud_nextcloud_network_connected:
 # Nextcloud volumes.
 #
 # Nextcloud volume vars.
-nextcloud_nextcloud_volumes:
+nextcloud_volumes:
   - "nextcloud"
   - "mariadb"
 
@@ -99,5 +104,10 @@ nextcloud_nextcloud_volumes:
 nextcloud_occ_prefix: "docker exec --user www-data {{ nextcloud_app_container_name }}"
 nextcloud_occ_install: >
   php occ maintenance:install
+  --database="{{ nextcloud_config_db_database }}"
+  --database-name="{{ nextcloud_config_db_database_name }}"
+  --database-user="{{ nextcloud_config_db_database_user }}"
+  --database-pass="{{ nextcloud_config_db_database_password }}"
+  --database-host="{{ nextcloud_mariadb_container_name }}"
   --admin-user="{{ nextcloud_config_admin_user }}"
   --admin-pass="{{ nextcloud_config_admin_password }}"
