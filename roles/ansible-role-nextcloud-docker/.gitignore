@@ -1,1 +1,6 @@
+# Virtualenv directory.
+.venv
+
+# Molecule-generated files.
+*.log
 *.pyc
