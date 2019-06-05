@@ -2,7 +2,12 @@
 # Tasks related to nextcloud-mariadb container (db server) for
 # ansible-role-nextcloud-docker.
 
-- name: Ensure the Mariadb container is present.
+- name: Find out if the Mariadb container is present and started.
+  docker_container_info:
+    name: "{{ nextcloud_mariadb_container_name }}"
+  register: nextcloud_mariadb_container_info
+
+- name: Ensure the Mariadb container is present and started.
   docker_container:
     name: "{{ nextcloud_mariadb_container_name }}"
     image: "{{ nextcloud_mariadb_container_image }}"
@@ -10,3 +15,6 @@
     env: "{{ nextcloud_mariadb_container_env | items2dict }}"
     restart: "{{ nextcloud_mariadb_container_restart }}"
     state: "{{ nextcloud_mariadb_container_state }}"
+  when: >
+    not nextcloud_mariadb_container_info.exists or
+    not nextcloud_mariadb_container_info.container.State.Running

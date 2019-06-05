@@ -2,6 +2,11 @@
 # Tasks related to nextcloud-app container (Nextcloud itself) for
 # ansible-role-nextcloud-docker.
 
+- name: Find out if the Nextcloud app container is present and started.
+  docker_container_info:
+    name: "{{ nextcloud_app_container_name }}"
+  register: nextcloud_app_container_info
+
 - name: Ensure the Nextcloud app container is present.
   docker_container:
     env: "{{ nextcloud_app_container_env | items2dict }}"
@@ -10,3 +15,6 @@
     restart: "{{ nextcloud_app_container_restart }}"
     state: "{{ nextcloud_app_container_state }}"
     volumes: "{{ nextcloud_app_container_volumes }}"
+  when: >
+    not nextcloud_app_container_info.exists or
+    not nextcloud_app_container_info.container.State.Running
