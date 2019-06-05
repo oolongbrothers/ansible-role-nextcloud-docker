@@ -1,4 +1,6 @@
 ---
+exclude_paths:
+  - ./.venv
 skip_list:
   # Use shell only when shell functionality is required
   - '305'
