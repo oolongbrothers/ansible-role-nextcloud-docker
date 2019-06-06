@@ -27,6 +27,7 @@ nextcloud_config_trusted_domains:
   - "{{ nextcloud_config_domain }}"
 nextcloud_config_admin_user: "admin"
 nextcloud_config_admin_password: "pass"
+nextcloud_encryption_module: "encryption"
 
 # Nextcloud containers.
 #
