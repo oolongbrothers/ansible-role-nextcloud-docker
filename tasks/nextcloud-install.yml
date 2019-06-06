@@ -49,3 +49,29 @@
       become: true
 
   when: "nextcloud_trusted_domains != nextcloud_config_trusted_domains"
+
+- name: Enable system encryption.
+  block:
+    - name: Check encryption status.
+      shell: "{{ nextcloud_occ_prefix }} php occ encryption:status"
+      register: nextcloud_encryption_status
+      changed_when: false
+
+    - name: Enable encryption.
+      shell: "{{ nextcloud_occ_prefix }} php occ encryption:enable"
+      when: "'enabled: false' in nextcloud_encryption_status.stdout"
+
+- name: Enable encryption module.
+  block:
+    - name: Check if module is already installed.
+      shell: "{{ nextcloud_occ_prefix }} php occ app:list --output=json"
+      register: nextcloud_raw_app_list
+      changed_when: false
+
+    - name: Store app list.
+      set_fact:
+        nextcloud_app_list: "{{ nextcloud_raw_app_list.stdout }}"
+
+    - name: Install encryption module.
+      shell: "{{ nextcloud_occ_prefix }} php occ app:enable {{ nextcloud_encryption_module }}"
+      when: "nextcloud_encryption_module in nextcloud_app_list.disabled"

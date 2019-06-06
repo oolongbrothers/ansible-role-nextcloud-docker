@@ -52,7 +52,7 @@
 
 - name: Complete Nextcloud install from cli.
   include_tasks:
-    file: "install.yml"
+    file: "nextcloud-install.yml"
     apply:
       tags:
         - install
