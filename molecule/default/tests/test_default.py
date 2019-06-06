@@ -30,7 +30,7 @@ def test_nextcloud_status(host):
     r = host.run(c)
     n = json.loads(r.stdout)
 
-    assert n['enabled']
+    assert n['installed']
 
 
 def test_encryption_status(host):
