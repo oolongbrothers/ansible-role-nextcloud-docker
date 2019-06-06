@@ -3,7 +3,7 @@
 
 - name: Set up docker volumes for Nextcloud.
   include_tasks:
-    file: "tasks/nextcloud-volumes.yml"
+    file: "nextcloud-volumes.yml"
     apply:
       tags:
         - storage
@@ -13,7 +13,7 @@
 
 - name: Set up Nextcloud nginx proxy container.
   include_tasks:
-    file: "tasks/nextcloud-nginx.yml"
+    file: "nextcloud-nginx.yml"
     apply:
       tags:
         - nginx
@@ -23,7 +23,7 @@
 
 - name: Set up Nextcloud mariadb container.
   include_tasks:
-    file: "tasks/nextcloud-mariadb.yml"
+    file: "nextcloud-mariadb.yml"
     apply:
       tags:
         - database
@@ -33,7 +33,7 @@
 
 - name: Set up Nextcloud application container.
   include_tasks:
-    file: "tasks/nextcloud-app.yml"
+    file: "nextcloud-app.yml"
     apply:
       tags:
         - app
@@ -43,7 +43,7 @@
 
 - name: Set up network for Nextcloud containers.
   include_tasks:
-    file: "tasks/nextcloud-network.yml"
+    file: "nextcloud-network.yml"
     apply:
       tags:
         - network
@@ -52,7 +52,7 @@
 
 - name: Complete Nextcloud install from cli.
   include_tasks:
-    file: "tasks/install.yml"
+    file: "install.yml"
     apply:
       tags:
         - install
