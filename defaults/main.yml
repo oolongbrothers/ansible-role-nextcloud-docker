@@ -3,15 +3,10 @@
 
 # To-do:
 #
-# - Database settings are somehow wrong--sqlite is in use.
 # - Add prompt when default credentials used.
 # - Non-docker volume for nextcloud app.
 # - Optional letsencrypt (ignore letsencrypt tasks if VIRTUAL_HOST
 #   contains "local").
-# - Turn on encryption.
-# - Enable default encryption module.
-# - What needs to be done to update NC on Docker?
-# - Molecule testing.
 
 # Nextcloud config.
 #
