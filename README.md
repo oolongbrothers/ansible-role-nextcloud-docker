@@ -112,7 +112,7 @@ The name for the running mariadb container.
 
     nextcloud_mariadb_container_state: started
 
-[`docker_cyyontainer` module](https://docs.ansible.com/ansible/latest/modules/docker_container_module.html#docker-container-module) `started` setting for this container.
+[`docker_container` module](https://docs.ansible.com/ansible/latest/modules/docker_container_module.html#docker-container-module) `started` setting for this container.
 
     nextcloud_mariadb_container_volumes:
       - "db:/var/lib/mysql"
