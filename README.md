@@ -16,6 +16,10 @@ This role uses [`docker_container_info` tasks](https://docs.ansible.com/ansible/
 
 These variables are used to configure the Nextcloud application itself. Some of them--such as e.g. the database variables--are also used in constructing the containers.
 
+    nextcloud_config_allow_insecure_defaults: false
+
+This role ships with insecure default values, but will fail unless they're overridden, or this variable is explicitly set to allow insecure values. Always use long, random passwords and use [Ansible Vault](https://docs.ansible.com/ansible/latest/user_guide/vault.html) or similar tools if storing them in version-control systems.
+
     nextcloud_config_domain: "example.local"
 
 The principal domain that the Nextcloud instance will be accessed at.
@@ -222,6 +226,10 @@ passed in as parameters) is always nice for users too:
 
     - hosts: servers
       become: true
+      vars:
+        nextcloud_config_db_root_password: "G7kTJU4kfzDUfxBwbLrnjufL"
+        nextcloud_config_db_database_password: "XGwUnenyBMQMNJrkvuEhzXeh"
+        nextcloud_config_admin_password: "SpaEUmFmZjsWG6T2deyef76C"
       roles:
          - role: ansible-role-nextcloud-docker
 

@@ -1,6 +1,15 @@
 ---
 # tasks file for ansible-role-nextcloud-docker
 
+- name: Abort if using insecure values.
+  assert:
+    that: >
+      (nextcloud_config_db_root_password != 'root'
+      and nextcloud_config_db_database_password != 'mysql'
+      and nextcloud_config_admin_password != 'pass')
+      or nextcloud_config_allow_insecure_defaults
+    fail_msg: "Please change insecure default vars or set 'nextcloud_config_allow_insecure_defaults: true'"
+
 - name: Set up docker volumes for Nextcloud.
   include_tasks:
     file: "nextcloud-volumes.yml"

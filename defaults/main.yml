@@ -11,6 +11,7 @@
 # Nextcloud config.
 #
 # nextcloud_config vars.
+nextcloud_config_allow_insecure_defaults: false
 nextcloud_config_domain: "example.local"
 nextcloud_config_db_root_password: "root"
 nextcloud_config_db_database: "mysql"
