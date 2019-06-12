@@ -21,7 +21,7 @@ fasteners==0.15
 flake8==3.7.7
 future==0.17.1
 git-url-parse==1.2.2
-idna==2.7
+idna==2.8
 importlib-metadata==0.17
 Jinja2==2.10
 jinja2-time==0.2.0
