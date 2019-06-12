@@ -3,7 +3,6 @@
 
 # To-do:
 #
-# - Add prompt when default credentials used.
 # - Non-docker volume for nextcloud app.
 # - Optional letsencrypt (ignore letsencrypt tasks if VIRTUAL_HOST
 #   contains "local").
@@ -79,12 +78,26 @@ nextcloud_nginx_container_volumes:
   - "/etc/localtime:/etc/localtime:ro"
   - "/var/run/docker.sock:/tmp/docker.sock:ro"
 
+# nextcloud_letsencrypt_container vars.
+nextcloud_letsencrypt_container_name: "nextcloud-letsencrypt"
+nextcloud_letsencrypt_container_image: "jrcs/letsencrypt-nginx-proxy-companion"
+nextcloud_letsencrypt_container_restart: true
+nextcloud_letsencrypt_container_restart_policy: unless-stopped
+nextcloud_letsencrypt_container_state: started
+nextcloud_letsencrypt_container_volumes:
+  - "./proxy/certs:/etc/nginx/certs:rw"
+  - "./proxy/vhost.d:/etc/nginx/vhost.d:rw"
+  - "./proxy/html:/usr/share/nginx/html:rw"
+  - "/etc/localtime:/etc/localtime:ro"
+  - "/var/run/docker.sock:/var/run/docker.sock:ro"
+
 # Nextcloud network.
 #
 # nextcloud_network vars.
 nextcloud_network_name: "nextcloud_network"
 nextcloud_network_connected:
   - "{{ nextcloud_app_container_name }}"
+  - "{{ nextcloud_letsencrypt_container_name }}"
   - "{{ nextcloud_mariadb_container_name }}"
   - "{{ nextcloud_nginx_container_name }}"
 

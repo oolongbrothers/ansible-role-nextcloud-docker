@@ -2,7 +2,5 @@
 - name: Converge
   hosts: all
   become: true
-  vars:
-    nextcloud_config_allow_insecure_defaults: true
   roles:
     - role: ansible-role-nextcloud-docker
