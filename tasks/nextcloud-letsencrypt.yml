@@ -11,10 +11,12 @@
   docker_container:
     name: "{{ nextcloud_letsencrypt_container_name }}"
     image: "{{ nextcloud_letsencrypt_container_image }}"
-    volumes: "{{ nextcloud_letsencrypt_container_volumes }}"
+    networks:
+      - "{{ nextcloud_network_name }}"
     restart: "{{ nextcloud_letsencrypt_container_restart }}"
     restart_policy: "{{ nextcloud_letsencrypt_container_restart_policy }}"
     state: "{{ nextcloud_letsencrypt_container_state }}"
+    volumes: "{{ nextcloud_letsencrypt_container_volumes }}"
     volumes_from: "{{ nextcloud_nginx_container_name }}"
   when:
     not nextcloud_letsencrypt_container_info.exists or
