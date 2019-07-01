@@ -4,7 +4,7 @@
 
 - name: Find out if the Letsencrypt container is present and started.
   docker_container_info:
-    name: "{{ nextcloud_nginx_container_name }}"
+    name: "{{ nextcloud_letsencrypt_container_name }}"
   register: nextcloud_letsencrypt_container_info
 
 - name: Ensure the Letsencrypt container is present and started.
@@ -15,6 +15,7 @@
     restart: "{{ nextcloud_letsencrypt_container_restart }}"
     restart_policy: "{{ nextcloud_letsencrypt_container_restart_policy }}"
     state: "{{ nextcloud_letsencrypt_container_state }}"
+    volumes_from: "{{ nextcloud_nginx_container_name }}"
   when:
     not nextcloud_letsencrypt_container_info.exists or
     not nextcloud_letsencrypt_container_info.container.State.Running
