@@ -2,5 +2,7 @@
 - name: Converge
   hosts: all
   become: true
+  vars:
+    nextcloud_letsencrypt_enable: false
   roles:
     - role: ansible-role-nextcloud-docker
