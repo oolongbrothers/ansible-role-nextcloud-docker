@@ -30,8 +30,14 @@ nextcloud_encryption_module: "encryption"
 nextcloud_app_container_env:
   - key: "VIRTUAL_HOST"
     value: "{{ nextcloud_config_domain }}"
+  - key: "LETSENCRYPT_HOST"
+    value: "{{ nextcloud_config_domain }}"
+  - key: "LETSENCRYPT_EMAIL"
+    value: "{{ nextcloud_letsencrypt_container_email }}"
 nextcloud_app_container_image: "nextcloud:latest"
 nextcloud_app_container_name: "nextcloud-app"
+nextcloud_app_container_ports:
+  - "80"
 nextcloud_app_container_restart: true
 nextcloud_app_container_state: started
 nextcloud_app_container_volumes:
@@ -79,6 +85,8 @@ nextcloud_nginx_container_volumes:
   - "/var/run/docker.sock:/tmp/docker.sock:ro"
 
 # nextcloud_letsencrypt_container vars.
+nextcloud_letsencrypt_container_email: "admin@example.com"
+nextcloud_letsencrypt_enable: true
 nextcloud_letsencrypt_container_name: "nextcloud-letsencrypt"
 nextcloud_letsencrypt_container_image: "jrcs/letsencrypt-nginx-proxy-companion"
 nextcloud_letsencrypt_container_restart: true
