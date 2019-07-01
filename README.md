@@ -4,7 +4,7 @@
 
 This role builds a Nexcloud instance on Ubuntu 16.04 using Docker containers.
 
-The role (which should probably work on other Linux distros and releases) is based on [this helpfule blog post at blog.ssdnodes.com](https://blog.ssdnodes.com/blog/installing-nextcloud-docker/). 
+The role (which should probably work on other Linux distros and releases) is based on [this helpfule blog post at blog.ssdnodes.com](https://blog.ssdnodes.com/blog/installing-nextcloud-docker/).
 
 ## Requirements
 
