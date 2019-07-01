@@ -9,9 +9,11 @@
 
 - name: Ensure the Nginx proxy container is present and started.
   docker_container:
+    exposed_ports: "{{ nextcloud_nginx_container_ports }}"
     image: "{{ nextcloud_nginx_container_image }}"
     name: "{{ nextcloud_nginx_container_name }}"
     ports: "{{ nextcloud_nginx_container_ports }}"
+    published_ports: "{{ nextcloud_nginx_container_ports }}"
     restart: "{{ nextcloud_nginx_container_restart }}"
     state: "{{ nextcloud_nginx_container_state }}"
     volumes: "{{ nextcloud_nginx_container_volumes }}"
