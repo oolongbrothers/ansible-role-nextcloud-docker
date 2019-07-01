@@ -10,8 +10,10 @@
 - name: Ensure the Nextcloud app container is present.
   docker_container:
     env: "{{ nextcloud_app_container_env | items2dict }}"
+    exposed_ports: "{{ nextcloud_app_container_ports }}"
     image: "{{ nextcloud_app_container_image }}"
     name: "{{ nextcloud_app_container_name }}"
+    network_mode: bridge
     restart: "{{ nextcloud_app_container_restart }}"
     state: "{{ nextcloud_app_container_state }}"
     volumes: "{{ nextcloud_app_container_volumes }}"
