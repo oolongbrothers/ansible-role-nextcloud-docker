@@ -39,9 +39,9 @@
         - letsencrypt
         - ssl
         - tls
+  when: nextcloud_letsencrypt_enable
   tags:
     - always
-  when: false
 
 - name: Set up Nextcloud mariadb container.
   include_tasks:
