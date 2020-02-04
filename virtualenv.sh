@@ -7,7 +7,7 @@ venv_activate="$venv_path/bin/activate"
 venv_deactivate="deactivate"
 
 # Create a brand-new virtualenv directory.
-rm -rf "$venv_path" && virtualenv "$venv_path"
+rm -rf "$venv_path" && virtualenv -p python3 "$venv_path"
 
 # Activate virtualenv within this process.
 #
