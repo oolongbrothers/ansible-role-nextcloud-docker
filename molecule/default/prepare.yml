@@ -4,14 +4,15 @@
   become: true
   vars:
     apt_packages:
-      # We need this to run geerlingguy.pip.
-      - python-pip
-      # Without this, the /etc/localtime symlink will be broken, and docker will
-      # die when trying to mount that file in `volumes`.
+      - python3-setuptools
+      # # Without this, the /etc/localtime symlink will be broken, and docker will
+      # # die when trying to mount that file in `volumes`.
       - tzdata
+    pip_package: python3-pip
+    pip_executable: pip3
     pip_install_packages:
       - name: docker
-      - name: docker-compose
+    docker_install_compose: true
     users:
       - username: nextcloud
   roles:
