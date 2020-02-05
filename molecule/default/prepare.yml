@@ -2,6 +2,7 @@
 - name: Prepare
   hosts: all
   become: true
+
   vars:
     apt_packages:
       - python3-setuptools
@@ -15,10 +16,12 @@
     docker_install_compose: true
     users:
       - username: nextcloud
+
   roles:
     - role: weareinteractive.apt
     - role: geerlingguy.pip
     - role: geerlingguy.docker
+
   tasks:
     # We need to change the storage driver to run our containers inside the
     # molecule container.

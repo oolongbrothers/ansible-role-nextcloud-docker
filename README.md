@@ -4,7 +4,7 @@
 
 This role builds a Nexcloud instance on Ubuntu 16.04 using Docker containers.
 
-The role (which should probably work on other Linux distros and releases) is based on [this helpfule blog post at blog.ssdnodes.com](https://blog.ssdnodes.com/blog/installing-nextcloud-docker/). 
+The role (which should probably work on other Linux distros and releases) is based on [this helpful blog post at blog.ssdnodes.com](https://blog.ssdnodes.com/blog/installing-nextcloud-docker/).
 
 ## Requirements
 
@@ -69,8 +69,13 @@ These variables are used to configure the container that runs the Nextcloud appl
     nextcloud_app_container_env:
       - key: "VIRTUAL_HOST"
         value: "{{ nextcloud_config_domain }}"
+      - key: "LETSENCRYPT_HOST"
+        value: "{{ nextcloud_config_domain }}"
+      - key: "LETSENCRYPT_EMAIL"
+        value: "{{ nextcloud_letsencrypt_container_email }}"
 
-The list of environment vars for the Nextcloud App container.
+The list of environment vars for the Nextcloud App container including
+`LETSENCRYPT_*` if required. See `nextcloud_letsencrypt_enable`, below.
 
     nextcloud_app_container_image: "nextcloud:latest"
 
@@ -79,6 +84,11 @@ The specific Nextcloud container image to use.
     nextcloud_app_container_name: "nextcloud-app"
 
 The name for the running nextcloud container.
+
+    nextcloud_app_container_ports:
+      - "80"
+
+The ports exposed by the nextcloud _app_ (note: **not** the nginx proxy).
 
     nextcloud_app_container_restart: true
 

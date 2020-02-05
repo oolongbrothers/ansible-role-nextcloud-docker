@@ -9,6 +9,7 @@
       and nextcloud_config_admin_password != 'pass')
       or nextcloud_config_allow_insecure_defaults
     fail_msg: "Please change insecure default vars or set 'nextcloud_config_allow_insecure_defaults: true'"
+  when: "nextcloud_config_domain != 'example.local'"
 
 - name: Set up docker volumes for Nextcloud.
   include_tasks:
@@ -27,6 +28,18 @@
       tags:
         - nginx
         - proxy
+  tags:
+    - always
+
+- name: Set up Letsencrypt container.
+  include_tasks:
+    file: "nextcloud-letsencrypt.yml"
+    apply:
+      tags:
+        - letsencrypt
+        - ssl
+        - tls
+  when: nextcloud_letsencrypt_enable
   tags:
     - always
 

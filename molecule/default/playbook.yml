@@ -3,6 +3,6 @@
   hosts: all
   become: true
   vars:
-    nextcloud_config_allow_insecure_defaults: true
+    nextcloud_letsencrypt_enable: false
   roles:
     - role: ansible-role-nextcloud-docker
