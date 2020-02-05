@@ -2,7 +2,7 @@
 
 [![Build Status](https://travis-ci.com/ctorgalson/ansible-role-nextcloud-docker.svg?branch=master)](https://travis-ci.com/ctorgalson/ansible-role-nextcloud-docker)
 
-This role builds a Nexcloud instance on Ubuntu 16.04 using Docker containers.
+This role builds a Nexcloud instance on Ubuntu 18.04 using Docker containers.
 
 The role (which should probably work on other Linux distros and releases) is based on [this helpful blog post at blog.ssdnodes.com](https://blog.ssdnodes.com/blog/installing-nextcloud-docker/).
 
