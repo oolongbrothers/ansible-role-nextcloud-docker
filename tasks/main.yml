@@ -21,6 +21,15 @@
   tags:
     - always
 
+- name: Set up network for Nextcloud containers.
+  include_tasks:
+    file: "nextcloud-network.yml"
+    apply:
+      tags:
+        - network
+  tags:
+    - always
+
 - name: Set up Nextcloud nginx proxy container.
   include_tasks:
     file: "nextcloud-nginx.yml"
@@ -60,15 +69,6 @@
       tags:
         - app
         - application
-  tags:
-    - always
-
-- name: Set up network for Nextcloud containers.
-  include_tasks:
-    file: "nextcloud-network.yml"
-    apply:
-      tags:
-        - network
   tags:
     - always
 
