@@ -15,7 +15,7 @@
     name: "{{ nextcloud_app_container_name }}"
     network_mode: bridge
     networks:
-      - "{{ nextcloud_network_name }}" 
+      - "{{ nextcloud_network_name }}"
     restart: "{{ nextcloud_app_container_restart }}"
     state: "{{ nextcloud_app_container_state }}"
     volumes: "{{ nextcloud_app_container_volumes }}"

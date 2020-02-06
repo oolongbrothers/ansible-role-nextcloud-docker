@@ -13,7 +13,7 @@
     image: "{{ nextcloud_mariadb_container_image }}"
     name: "{{ nextcloud_mariadb_container_name }}"
     networks:
-      - "{{ nextcloud_network_name }}" 
+      - "{{ nextcloud_network_name }}"
     restart: "{{ nextcloud_mariadb_container_restart }}"
     state: "{{ nextcloud_mariadb_container_state }}"
     volumes: "{{ nextcloud_mariadb_container_volumes }}"
