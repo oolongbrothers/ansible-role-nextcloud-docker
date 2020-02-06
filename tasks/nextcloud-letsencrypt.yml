@@ -18,6 +18,6 @@
     state: "{{ nextcloud_letsencrypt_container_state }}"
     volumes: "{{ nextcloud_letsencrypt_container_volumes }}"
     volumes_from: "{{ nextcloud_nginx_container_name }}"
-  when:
+  when: >
     not nextcloud_letsencrypt_container_info.exists or
     not nextcloud_letsencrypt_container_info.container.State.Running

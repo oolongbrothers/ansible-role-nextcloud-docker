@@ -103,10 +103,6 @@ nextcloud_letsencrypt_container_volumes:
 #
 # nextcloud_network vars.
 nextcloud_network_name: "nextcloud_network"
-nextcloud_network_connected:
-  - "{{ nextcloud_app_container_name }}"
-  - "{{ nextcloud_mariadb_container_name }}"
-  - "{{ nextcloud_nginx_container_name }}"
 
 # Nextcloud volumes.
 #

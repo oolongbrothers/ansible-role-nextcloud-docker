@@ -192,13 +192,6 @@ These variables are used to configure the Docker network used in the Nextcloud s
 
 The name for the running Docker network that containers use for communication.
 
-    nextcloud_network_connected:
-      - "{{ nextcloud_app_container_name }}"
-      - "{{ nextcloud_mariadb_container_name }}"
-      - "{{ nextcloud_nginx_container_name }}"
-
-The list of containers that must be connected to the Docker newtork.
-
 ### Nextcloud volume vars.
 
 This variable is used to create the persistent Docker volumes used in the Nextcloud setup. It is passed directly to the [`docker_volume` task](https://docs.ansible.com/ansible/latest/modules/docker_volume_module.html#docker-volume-module) used to create those volumes.
