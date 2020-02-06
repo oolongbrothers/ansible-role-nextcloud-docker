@@ -12,7 +12,7 @@
     name: "{{ nextcloud_letsencrypt_container_name }}"
     image: "{{ nextcloud_letsencrypt_container_image }}"
     networks:
-      - "{{ nextcloud_network_name }}"
+      - name: "{{ nextcloud_network_name }}"
     restart: "{{ nextcloud_letsencrypt_container_restart }}"
     restart_policy: "{{ nextcloud_letsencrypt_container_restart_policy }}"
     state: "{{ nextcloud_letsencrypt_container_state }}"
