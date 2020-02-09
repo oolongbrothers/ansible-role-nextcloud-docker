@@ -81,3 +81,13 @@
         - nextcloud
   tags:
     - always
+
+- name: Add cron tasks for Nextcloud app.
+  include_tasks:
+    file: "{{ nextcloud_cron_tasks_include }}"
+    apply:
+      tags:
+        - cron
+        - nextcloud
+  tags:
+    - always
