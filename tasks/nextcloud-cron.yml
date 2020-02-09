@@ -1,0 +1,11 @@
+---
+# Tasks related to nextcloud-letsencrypt cron tasks.
+
+- name: Add Nextcloud cron job(s) to system crontab.
+  cron:
+    name: "Add cron tasks for Nextcloud app."
+    special_time: daily
+    job: "{{ task }}"
+  loop: "{{ nextcloud_cron_tasks }}"
+  loop_control:
+    loop_var: task
