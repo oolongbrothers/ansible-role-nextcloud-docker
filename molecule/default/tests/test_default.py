@@ -50,3 +50,10 @@ def test_encryption_module_status(host):
     p = re.compile('\\d+\\.\\d+\\.\\d+')
 
     assert p.match(e['enabled']['encryption'])
+
+
+def test_crontab(host):
+    c = 'crontab -l'
+    r = host.run(c)
+
+    assert 'php -f /var/www/html/nextcloud/cron.php' in r.stdout
