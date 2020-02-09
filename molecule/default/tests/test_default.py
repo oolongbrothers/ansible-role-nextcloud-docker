@@ -52,8 +52,8 @@ def test_encryption_module_status(host):
     assert p.match(e['enabled']['encryption'])
 
 
-def test_crontab(host):
+def test_crontab_task(host):
     c = 'crontab -l'
     r = host.run(c)
 
-    assert 'php -f /var/www/html/nextcloud/cron.php' in r.stdout
+    assert 'php -f /var/www/html/cron.php' in r.stdout
