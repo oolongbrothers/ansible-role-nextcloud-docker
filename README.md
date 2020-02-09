@@ -222,6 +222,21 @@ The prefix used to specify the Docker container to run `occ` commands on, and al
 
 The actual command used to install the Nextcloud instance.
 
+### Nextcloud cron vars
+
+These variables are used to configure the cron job(s) configured by the role
+for the Nextcloud app.
+
+    nextcloud_cron_tasks_include: "nextcloud_cron.yml"
+
+The include file containing the tasks for configuring cron. Override this path
+to provide your own cron tasks.
+
+    nextcloud_cron_tasks:
+      - "php -f /var/www/html/nextcloud/cron.php"
+
+A list of the default cron tasks to add to crontab.
+
 ## Example Playbook
 
 Including an example of how to use your role (for instance, with variables
