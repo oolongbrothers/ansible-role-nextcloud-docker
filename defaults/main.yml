@@ -130,4 +130,4 @@ nextcloud_occ_install: >
 # Nextcloud cron vars (note these will be prefixed with nextcloud_occ_prefix).
 nextcloud_cron_tasks_include: "nextcloud-cron.yml"
 nextcloud_cron_tasks:
-  - "php -f /var/www/html/nextcloud/cron.php"
+  - "php -f /var/www/html/cron.php"
