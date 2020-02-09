@@ -302,7 +302,7 @@ The include file containing the tasks for configuring cron. Override this path t
 A list of the default cron tasks to add to crontab.
 
     nextcloud_cron_tasks:
-      - "php -f /var/www/html/nextcloud/cron.php"
+      - "php -f /var/www/html/cron.php"
 
 ## Example Playbook
 
