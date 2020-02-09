@@ -124,3 +124,10 @@ nextcloud_occ_install: >
   --database-host="{{ nextcloud_mariadb_container_name }}"
   --admin-user="{{ nextcloud_config_admin_user }}"
   --admin-pass="{{ nextcloud_config_admin_password }}"
+
+# Nextcloud cron.
+#
+# Nextcloud cron vars (note these will be prefixed with nextcloud_occ_prefix).
+nextcloud_cron_tasks_include: "nextcloud-cron.yml"
+nextcloud_cron_tasks:
+  - "php -f /var/www/html/nextcloud/cron.php"
