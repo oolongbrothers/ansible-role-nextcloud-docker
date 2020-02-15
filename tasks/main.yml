@@ -6,7 +6,8 @@
     that: >
       (nextcloud_config_db_root_password != 'root'
       and nextcloud_config_db_database_password != 'mysql'
-      and nextcloud_config_admin_password != 'pass')
+      and nextcloud_config_admin_password != 'pass'
+      and nextcloud_redis_container_host_password != 'pass')
       or nextcloud_config_allow_insecure_defaults
     fail_msg: "Please change insecure default vars or set 'nextcloud_config_allow_insecure_defaults: true'"
   when: "nextcloud_config_domain != 'example.local'"
@@ -59,6 +60,16 @@
       tags:
         - database
         - mariadb
+  tags:
+    - always
+
+- name: Set up Nextcloud redis container.
+  include_tasks:
+    file: "nextcloud-redis.yml"
+    apply:
+      tags:
+        - cache
+        - redis
   tags:
     - always
 
