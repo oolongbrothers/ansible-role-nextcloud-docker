@@ -34,6 +34,13 @@ nextcloud_app_container_env:
     value: "{{ nextcloud_config_domain }}"
   - key: "LETSENCRYPT_EMAIL"
     value: "{{ nextcloud_letsencrypt_container_email }}"
+  - key: "REDIS_HOST"
+    value: "{{ nextcloud_redis_container_name }}"
+  - key: "REDIS_HOST_PORT"
+    value: "6379"
+  - key: "REDIS_HOST_PASSWORD"
+    value: "{{ nextcloud_redis_container_host_password }}"
+
 nextcloud_app_container_image: "nextcloud:latest"
 nextcloud_app_container_name: "nextcloud-app"
 nextcloud_app_container_ports:
@@ -83,6 +90,16 @@ nextcloud_nginx_container_volumes:
   - "./proxy/certs:/etc/nginx/certs:ro"
   - "/etc/localtime:/etc/localtime:ro"
   - "/var/run/docker.sock:/tmp/docker.sock:ro"
+
+# nextcloud_redis_container vars.
+nextcloud_redis_container_name: "nextcloud-redis"
+# nextcloud_redis_container_port: "6379"
+nextcloud_redis_container_image: "redis:alpine"
+nextcloud_redis_container_restart: true
+nextcloud_redis_container_state: started
+nextcloud_redis_container_host_password: "pass"
+nextcloud_redis_container_ports:
+  - "6379:6379"
 
 # nextcloud_letsencrypt_container vars.
 nextcloud_letsencrypt_container_email: "admin@example.com"
