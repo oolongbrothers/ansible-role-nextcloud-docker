@@ -57,3 +57,15 @@ def test_crontab_task(host):
     r = host.run(c)
 
     assert 'php -f /var/www/html/cron.php' in r.stdout
+
+
+@pytest.mark.parametrize('property,result', [
+    ('redis', 'nextcloud-redis'),
+    ('memcache.distributed', 'Redis'),
+])
+def test_nextcloud_redis_config(host, property, result):
+    c = ('docker exec --user www-data nextcloud-app '
+         'php occ config:system:get {}'.format(property))
+    r = host.run(c)
+
+    assert result in r.stdout
