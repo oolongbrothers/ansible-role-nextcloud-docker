@@ -1,0 +1,98 @@
+version: '3'
+
+services:
+  db:
+    image: mariadb
+    command: --transaction-isolation=READ-COMMITTED --binlog-format=ROW
+    restart: always
+    volumes:
+      - db:/var/lib/mysql
+    environment:
+      - MYSQL_ROOT_PASSWORD={{ nd_mariadb_root_password }}
+    env_file:
+      - db.env
+
+{% if nd_use_redis %}
+  redis:
+    image: redis:alpine
+    restart: always
+
+{% endif %}
+  app:
+    image: nextcloud:apache
+    restart: always
+    volumes:
+      - nextcloud:/var/www/html
+    environment:
+{% for variable in nd_nextcloud_env_vars %}
+      - {{ variable.name }}={{ variable.value }}
+{% endfor %}
+    env_file:
+      - db.env
+    depends_on:
+      - db
+{% if nd_use_redis %}
+      - redis
+{% endif %}
+    networks:
+      - proxy-tier
+      - default
+
+  cron:
+    image: nextcloud:apache
+    restart: always
+    volumes:
+      - nextcloud:/var/www/html
+    entrypoint: /cron.sh
+    depends_on:
+      - db
+{% if nd_use_redis %}
+      - redis
+{% endif %}
+
+  proxy:
+    build: ./proxy
+    restart: always
+    ports:
+      - 80:80
+{% if nd_use_letsencrypt %}
+      - 443:443
+{% endif %}
+    labels:
+      com.github.jrcs.letsencrypt_nginx_proxy_companion.nginx_proxy: "true"
+    volumes:
+{% if nd_use_letsencrypt %}
+      - certs:/etc/nginx/certs:ro
+{% endif %}
+      - vhost.d:/etc/nginx/vhost.d
+      - html:/usr/share/nginx/html
+      - /var/run/docker.sock:/tmp/docker.sock:ro
+    networks:
+      - proxy-tier
+
+{% if nd_use_letsencrypt %}
+  letsencrypt-companion:
+    image: jrcs/letsencrypt-nginx-proxy-companion
+    restart: always
+    volumes:
+      - certs:/etc/nginx/certs
+      - vhost.d:/etc/nginx/vhost.d
+      - html:/usr/share/nginx/html
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+    networks:
+      - proxy-tier
+    depends_on:
+      - proxy
+
+{% endif %}
+volumes:
+  db:
+  nextcloud:
+{% if nd_use_letsencrypt %}
+  certs:
+{% endif %}
+  vhost.d:
+  html:
+
+networks:
+  proxy-tier:
