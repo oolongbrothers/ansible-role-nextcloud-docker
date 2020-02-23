@@ -5,14 +5,18 @@
 
   vars:
     apt_packages:
+      - git
       - python3-setuptools
-      # # Without this, the /etc/localtime symlink will be broken, and docker will
-      # # die when trying to mount that file in `volumes`.
+      # Without this, the /etc/localtime symlink will be broken, and docker will
+      # die when trying to mount that file in `volumes`.
       - tzdata
+      - vim
+      - wget
     pip_package: python3-pip
     pip_executable: pip3
     pip_install_packages:
       - name: docker
+      - name: docker-compose
     docker_install_compose: true
     users:
       - username: nextcloud
@@ -31,6 +35,7 @@
           service:
             name: docker
             state: stopped
+
         - name: Create /etc/docker/daemon.json
           copy:
             content: |
@@ -40,6 +45,7 @@
             dest: "/etc/docker/daemon.json"
             owner: root
             group: root
+
         - name: Start Docker service.
           service:
             name: docker

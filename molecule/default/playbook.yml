@@ -2,7 +2,24 @@
 - name: Converge
   hosts: all
   become: true
+  become_user: root
   vars:
-    nextcloud_letsencrypt_enable: false
+    nd_use_letsencrypt: false
+    nd_nextcloud_env_vars:
+      - name: "VIRTUAL_HOST"
+        value: "instance"
+      - name: "MYSQL_HOST"
+        value: "db"
+    nd_mariadb_root_password: "root-password"
+    nd_mariadb_env_vars:
+      - name: "MYSQL_DATABASE"
+        value: "nextcloud-database"
+      - name: "MYSQL_PASSWORD"
+        value: "mysql-password"
+      - name: "MYSQL_USER"
+        value: "nextcloud-user"
+    nd_redis_env_vars:
+      - name: "REDIS_HOST"
+        value: "redis"
   roles:
     - role: ansible-role-nextcloud-docker
