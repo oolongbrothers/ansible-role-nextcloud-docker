@@ -1,104 +1,36 @@
 ---
 # tasks file for ansible-role-nextcloud-docker
 
-- name: Abort if using insecure values.
-  assert:
-    that: >
-      (nextcloud_config_db_root_password != 'root'
-      and nextcloud_config_db_database_password != 'mysql'
-      and nextcloud_config_admin_password != 'pass'
-      and nextcloud_redis_container_host_password != 'pass')
-      or nextcloud_config_allow_insecure_defaults
-    fail_msg: "Please change insecure default vars or set 'nextcloud_config_allow_insecure_defaults: true'"
-  when: "nextcloud_config_domain != 'example.local'"
+- name: Create tmp directory for docker-compose files on remote.
+  file:
+    path: "{{ nd_docker_compose_project_dir }}"
+    state: directory
 
-- name: Set up docker volumes for Nextcloud.
-  include_tasks:
-    file: "nextcloud-volumes.yml"
-    apply:
-      tags:
-        - storage
-        - volumes
-  tags:
-    - always
+- name: Transfer and populate env file for database container.
+  template:
+    src: "{{ nd_docker_compose_project_src }}/db.env.j2"
+    dest: "{{ nd_docker_compose_project_dir }}/db.env"
 
-- name: Set up network for Nextcloud containers.
-  include_tasks:
-    file: "nextcloud-network.yml"
-    apply:
-      tags:
-        - network
-  tags:
-    - always
+- name: Create a list of env variables for Nextcloud.
+  set_fact:
+    nd_nextcloud_env_vars: >
+      {{ nd_nextcloud_env_vars
+      + (nd_use_redis is sameas true)|ternary(nd_redis_env_vars, [])
+      + (nd_use_letsencrypt is sameas true)|ternary(nd_letsencrypt_env_vars, []) }}
 
-- name: Set up Nextcloud nginx proxy container.
-  include_tasks:
-    file: "nextcloud-nginx.yml"
-    apply:
-      tags:
-        - nginx
-        - proxy
-  tags:
-    - always
+- name: Transfer dockerfile to remote.
+  template:
+    src: "{{ nd_docker_compose_project_src }}/docker-compose.yml.j2"
+    dest: "{{ nd_docker_compose_project_dir }}/docker-compose.yml"
 
-- name: Set up Letsencrypt container.
-  include_tasks:
-    file: "nextcloud-letsencrypt.yml"
-    apply:
-      tags:
-        - letsencrypt
-        - ssl
-        - tls
-  when: nextcloud_letsencrypt_enable
-  tags:
-    - always
+- name: Copy Nextcloud dockerfile dependencies to remote.
+  copy:
+    src: "{{ nd_docker_compose_project_src }}/proxy"
+    dest: "{{ nd_docker_compose_project_dir }}"
 
-- name: Set up Nextcloud mariadb container.
-  include_tasks:
-    file: "nextcloud-mariadb.yml"
-    apply:
-      tags:
-        - database
-        - mariadb
-  tags:
-    - always
-
-- name: Set up Nextcloud redis container.
-  include_tasks:
-    file: "nextcloud-redis.yml"
-    apply:
-      tags:
-        - cache
-        - redis
-  tags:
-    - always
-
-- name: Set up Nextcloud application container.
-  include_tasks:
-    file: "nextcloud-app.yml"
-    apply:
-      tags:
-        - app
-        - application
-  tags:
-    - always
-
-- name: Complete Nextcloud install from cli.
-  include_tasks:
-    file: "nextcloud-install.yml"
-    apply:
-      tags:
-        - install
-        - nextcloud
-  tags:
-    - always
-
-- name: Add cron tasks for Nextcloud app.
-  include_tasks:
-    file: "{{ nextcloud_cron_tasks_include }}"
-    apply:
-      tags:
-        - cron
-        - nextcloud
-  tags:
-    - always
+- name: Build and start Nextcloud with docker-compose.
+  docker_compose:
+    project_src: "{{ nd_docker_compose_project_dir }}"
+    build: false
+    restarted: true
+  register: nd_docker_compose_output
