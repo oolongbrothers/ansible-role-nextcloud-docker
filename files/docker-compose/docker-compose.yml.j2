@@ -58,8 +58,10 @@ services:
 {% if nd_use_letsencrypt %}
       - 443:443
 {% endif %}
+{% if nd_use_letsencrypt %}
     labels:
       com.github.jrcs.letsencrypt_nginx_proxy_companion.nginx_proxy: "true"
+{% endif %}
     volumes:
 {% if nd_use_letsencrypt %}
       - certs:/etc/nginx/certs:ro
