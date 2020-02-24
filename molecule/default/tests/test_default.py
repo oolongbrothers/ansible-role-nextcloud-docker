@@ -12,16 +12,59 @@ testinfra_hosts = testinfra.utils.ansible_runner.AnsibleRunner(
     os.environ['MOLECULE_INVENTORY_FILE']).get_hosts('all')
 
 
+@pytest.mark.parametrize('string,existence', [
+    ('MYSQL_DATABASE=nextcloud-database', True),
+    ('MYSQL_PASSWORD=mysql-password', True),
+    ('MYSQL_USER=nextcloud-user', True),
+])
+def test_db_env_file(host, string, existence):
+    f = host.file('/tmp/nextcloud/db.env')
+
+    assert f.exists
+    assert f.is_file
+    assert existence is (string in f.content_string)
+
+
+@pytest.mark.parametrize('string,existence', [
+    ('VIRTUAL_HOST=instance', True),
+    ('MYSQL_HOST=db', True),
+    ('REDIS_HOST=redis', True),
+    ('443', False),
+    ('cert', False),
+    ('letsencrypt', False),
+])
+def test_docker_compose_file(host, string, existence):
+    f = host.file('/tmp/nextcloud/docker-compose.yml')
+
+    assert f.exists
+    assert f.is_file
+    assert existence is (string in f.content_string)
+
+
 @pytest.mark.parametrize('container', [
-    'nextcloud-app',
-    'nextcloud-mariadb',
-    'nextcloud-nginx',
+    'nextcloud_app_1',
+    'nextcloud_cron_1',
+    'nextcloud_db_1',
+    'nextcloud_redis_1',
+    'nextcloud_proxy_1',
 ])
 def test_container_status(host, container):
     c = 'docker ps --all --quiet --format "{{.Names}}" --filter status=running'
     r = host.run(c)
 
     assert container in r.stdout
+
+
+@pytest.mark.parametrize('trusted_domain', [
+  'localhost',
+  'instance',
+])
+def test_trusted_domains(host, trusted_domain):
+    c = ('docker exec --user www-data nextcloud_app_1 php occ '
+         'config:system:get trusted_domains')
+    r = host.run(c)
+
+    assert trusted_domain in r.stdout
 
 
 def test_nextcloud_status(host):

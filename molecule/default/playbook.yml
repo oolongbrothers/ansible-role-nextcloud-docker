@@ -21,5 +21,10 @@
     nd_redis_env_vars:
       - name: "REDIS_HOST"
         value: "redis"
+    nd_nextcloud_admin_user: "nc-admin-user"
+    nd_nextcloud_admin_password: "nc-admin-password"
+    nd_nextcloud_trusted_domains:
+      - "localhost"
+      - "instance"
   roles:
     - role: ansible-role-nextcloud-docker
