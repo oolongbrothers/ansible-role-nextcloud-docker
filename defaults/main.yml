@@ -1,7 +1,8 @@
 ---
 # defaults file for ansible-role-nextcloud-docker
 
-nd_docker_compose_project_dir: "/tmp/docker-compose"
+nd_docker_compose_project: "nextcloud"
+nd_docker_compose_project_dir: "/tmp/{{ nd_docker_compose_project }}"
 nd_docker_compose_project_src: "files/docker-compose"
 
 # Service options.
@@ -35,3 +36,16 @@ nd_letsencrypt_env_vars:
     value: ""
   - name: "LETSENCRYPT_EMAIL"
     value: ""
+
+nd_nextcloud_occ_prefix: >-
+  docker exec --user www-data {{ nd_docker_compose_project }}_app_1
+
+nd_nextcloud_admin_user: ""
+nd_nextcloud_admin_password: ""
+
+nd_nextcloud_trusted_domains: []
+
+nd_nextcloud_occ_install: >
+  php occ maintenance:install
+  --admin-user="{{ nd_nextcloud_admin_user }}"
+  --admin-pass="{{ nd_nextcloud_admin_password }}"

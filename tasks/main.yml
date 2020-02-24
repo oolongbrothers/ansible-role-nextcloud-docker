@@ -10,6 +10,8 @@
   template:
     src: "{{ nd_docker_compose_project_src }}/db.env.j2"
     dest: "{{ nd_docker_compose_project_dir }}/db.env"
+  # The env contains the mysql password.
+  no_log: true
 
 - name: Create a list of env variables for Nextcloud.
   set_fact:
@@ -22,6 +24,8 @@
   template:
     src: "{{ nd_docker_compose_project_src }}/docker-compose.yml.j2"
     dest: "{{ nd_docker_compose_project_dir }}/docker-compose.yml"
+  # The dockerfile contains the mysql root password.
+  no_log: true
 
 - name: Copy Nextcloud dockerfile dependencies to remote.
   copy:
@@ -33,4 +37,63 @@
     project_src: "{{ nd_docker_compose_project_dir }}"
     build: false
     restarted: true
+  changed_when: false
   register: nd_docker_compose_output
+
+- name: Check if Nextcloud is installed and install it if not.
+  block:
+    - name: Check status of Nextcloud installation.
+      shell: "{{ nd_nextcloud_occ_prefix }} php occ status --output=json | tail -n1"
+      register: nd_nextcloud_raw_status
+      changed_when: false
+
+    - name: Store status.
+      set_fact:
+        nd_nextcloud_status: "{{ nd_nextcloud_raw_status.stdout | from_json }}"
+
+    - name: Complete Nextcloud installation from cli.
+      shell: "{{ nd_nextcloud_occ_prefix }} {{ nd_nextcloud_occ_install }}"
+      become: true
+      when: "not nd_nextcloud_status.installed"
+      no_log: true
+
+- name: Check Nextcloud trusted domains and set them.
+  block:
+    - name: Check trusted domains.
+      shell: "{{ nd_nextcloud_occ_prefix }} php occ config:system:get trusted_domains --output=json"
+      register: nd_nextcloud_raw_trusted_domains
+      become: true
+      changed_when: false
+      failed_when: "nd_nextcloud_raw_trusted_domains.rc > 1"
+
+    - name: Store trusted domains.
+      set_fact:
+        nd_nextcloud_current_trusted_domains: "{{ nd_nextcloud_raw_trusted_domains.stdout }}"
+
+    - name: Set trusted domain(s) for Nextcloud install.
+      block:
+        # As long as we're using array indicies to add each domain (see next task),
+        # we basically MUST remove all of them (e.g. if there were originally three
+        # trusted_domains, and the new list consisted of two, we could wind up with
+        # an unexpected entry in the array.
+        - name: Remove trusted domains.
+          shell: "{{ nd_nextcloud_occ_prefix }} php occ config:system:delete trusted_domains"
+          when: "nd_nextcloud_current_trusted_domains != nd_nextcloud_trusted_domains"
+          changed_when: false
+
+        # I don't know if there's a better way to do this or not...
+        - name: Set specified trusted domains.
+          shell: "{{ nd_nextcloud_occ_prefix }} php occ config:system:set trusted_domains {{ index }} --value={{ domain }}"
+          loop: "{{ nd_nextcloud_trusted_domains }}"
+          loop_control:
+            loop_var: "domain"
+            index_var: "index"
+          when: "nd_nextcloud_current_trusted_domains != nd_nextcloud_trusted_domains"
+
+        - name: Debug current trusted domains.
+          debug:
+            var: nd_nextcloud_current_trusted_domains
+
+        - name: Debug trusted domains.
+          debug:
+            var: nd_nextcloud_trusted_domains
