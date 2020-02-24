@@ -90,10 +90,28 @@
             index_var: "index"
           when: "nd_nextcloud_current_trusted_domains != nd_nextcloud_trusted_domains"
 
-        - name: Debug current trusted domains.
-          debug:
-            var: nd_nextcloud_current_trusted_domains
+- name: Enable system encryption.
+  block:
+    - name: Check encryption status.
+      shell: "{{ nd_nextcloud_occ_prefix }} php occ encryption:status"
+      register: nd_nextcloud_encryption_status
+      changed_when: false
 
-        - name: Debug trusted domains.
-          debug:
-            var: nd_nextcloud_trusted_domains
+    - name: Enable encryption.
+      shell: "{{ nd_nextcloud_occ_prefix }} php occ encryption:enable"
+      when: "'enabled: false' in nd_nextcloud_encryption_status.stdout"
+
+- name: Enable encryption module.
+  block:
+    - name: Check if module is already installed.
+      shell: "{{ nd_nextcloud_occ_prefix }} php occ app:list --output=json"
+      register: nd_nextcloud_raw_app_list
+      changed_when: false
+
+    - name: Store app list.
+      set_fact:
+        nd_nextcloud_app_list: "{{ nd_nextcloud_raw_app_list.stdout }}"
+
+    - name: Install encryption module.
+      shell: "{{ nd_nextcloud_occ_prefix }} php occ app:enable {{ nd_nextcloud_encryption_module }}"
+      when: "nd_nextcloud_encryption_module in nd_nextcloud_app_list.disabled"
