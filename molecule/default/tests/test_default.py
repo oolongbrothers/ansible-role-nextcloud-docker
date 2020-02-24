@@ -68,7 +68,7 @@ def test_trusted_domains(host, trusted_domain):
 
 
 def test_nextcloud_status(host):
-    c = ('docker exec --user www-data nextcloud-app '
+    c = ('docker exec --user www-data nextcloud_app_1 '
          'php occ status --output=json')
     r = host.run(c)
     n = json.loads(r.stdout)
@@ -77,7 +77,7 @@ def test_nextcloud_status(host):
 
 
 def test_encryption_status(host):
-    c = ('docker exec --user www-data nextcloud-app '
+    c = ('docker exec --user www-data nextcloud_app_1 '
          'php occ encryption:status --output=json')
     r = host.run(c)
     e = json.loads(r.stdout)
@@ -86,7 +86,7 @@ def test_encryption_status(host):
 
 
 def test_encryption_module_status(host):
-    c = ('docker exec --user www-data nextcloud-app '
+    c = ('docker exec --user www-data nextcloud_app_1 '
          'php occ app:list --output=json')
     r = host.run(c)
     e = json.loads(r.stdout)
@@ -96,18 +96,20 @@ def test_encryption_module_status(host):
 
 
 def test_crontab_task(host):
-    c = 'crontab -l'
+    c = 'docker exec nextcloud_cron_1 crontab -l'
+    c = ('docker exec --user www-data nextcloud_cron_1 '
+         'busybox cat /var/spool/cron/crontabs/www-data')
     r = host.run(c)
 
     assert 'php -f /var/www/html/cron.php' in r.stdout
 
 
 @pytest.mark.parametrize('property,result', [
-    ('redis', 'nextcloud-redis'),
-    ('memcache.distributed', 'Redis'),
+    ('redis', 'host: redis'),
+    ('memcache.distributed', '\\OC\\Memcache\\Redis'),
 ])
 def test_nextcloud_redis_config(host, property, result):
-    c = ('docker exec --user www-data nextcloud-app '
+    c = ('docker exec --user www-data nextcloud_app_1 '
          'php occ config:system:get {}'.format(property))
     r = host.run(c)
 
