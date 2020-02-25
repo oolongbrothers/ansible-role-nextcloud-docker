@@ -38,6 +38,7 @@ services:
       - proxy-tier
       - default
 
+{% if nd_use_cron %}
   cron:
     image: nextcloud:apache
     restart: always
@@ -48,6 +49,7 @@ services:
       - db
 {% if nd_use_redis %}
       - redis
+{% endif %}
 {% endif %}
 
   proxy:
