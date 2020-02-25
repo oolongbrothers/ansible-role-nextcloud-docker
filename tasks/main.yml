@@ -1,117 +1,44 @@
 ---
 # tasks file for ansible-role-nextcloud-docker
 
-- name: Create tmp directory for docker-compose files on remote.
-  file:
-    path: "{{ nd_docker_compose_project_dir }}"
-    state: directory
+- name: Abort if using insecure values.
+  assert:
+    that: >
+      (nd_mariadb_root_password != 'insecure'
+      and nd_mariadb_password != 'insecure'
+      and nd_redis_host_password != 'insecure'
+      and nd_nextcloud_admin_password != 'insecure')
+      or nd_allow_insecure_defaults
+    fail_msg: "Please change insecure default vars or set 'nd_allow_insecure_defaults: true'"
+  when: "nd_domain_name != 'example.local'"
 
-- name: Transfer and populate env file for database container.
-  template:
-    src: "{{ nd_docker_compose_project_src }}/db.env.j2"
-    dest: "{{ nd_docker_compose_project_dir }}/db.env"
-  # The env contains the mysql password.
-  no_log: true
+- name: Prepare docker-compose files, and use them to build the app.
+  include_tasks:
+    file: "nd-docker-compose.yml"
+    apply:
+      tags:
+        - docker
+        - docker-compose
+        - volumes
+  tags:
+    - always
 
-- name: Create a list of env variables for Nextcloud.
-  set_fact:
-    nd_nextcloud_env_vars: >
-      {{ nd_nextcloud_env_vars
-      + (nd_use_redis is sameas true)|ternary(nd_redis_env_vars, [])
-      + (nd_use_letsencrypt is sameas true)|ternary(nd_letsencrypt_env_vars, []) }}
+- name: Install Nextcloud application.
+  include_tasks:
+    file: "nd-install-nextcloud.yml"
+    apply:
+      tags:
+        - install-nextcloud
+        - nextcloud
+  tags:
+    - always
 
-- name: Transfer dockerfile to remote.
-  template:
-    src: "{{ nd_docker_compose_project_src }}/docker-compose.yml.j2"
-    dest: "{{ nd_docker_compose_project_dir }}/docker-compose.yml"
-  # The dockerfile contains the mysql root password.
-  no_log: true
-
-- name: Copy Nextcloud dockerfile dependencies to remote.
-  copy:
-    src: "{{ nd_docker_compose_project_src }}/proxy"
-    dest: "{{ nd_docker_compose_project_dir }}"
-
-- name: Build and start Nextcloud with docker-compose.
-  docker_compose:
-    project_src: "{{ nd_docker_compose_project_dir }}"
-    build: false
-    restarted: true
-  changed_when: false
-  register: nd_docker_compose_output
-
-- name: Check if Nextcloud is installed and install it if not.
-  block:
-    - name: Check status of Nextcloud installation.
-      shell: "{{ nd_nextcloud_occ_prefix }} php occ status --output=json | tail -n1"
-      register: nd_nextcloud_raw_status
-      changed_when: false
-
-    - name: Store status.
-      set_fact:
-        nd_nextcloud_status: "{{ nd_nextcloud_raw_status.stdout | from_json }}"
-
-    - name: Complete Nextcloud installation from cli.
-      shell: "{{ nd_nextcloud_occ_prefix }} {{ nd_nextcloud_occ_install }}"
-      become: true
-      when: "not nd_nextcloud_status.installed"
-      no_log: true
-
-- name: Check Nextcloud trusted domains and set them.
-  block:
-    - name: Check trusted domains.
-      shell: "{{ nd_nextcloud_occ_prefix }} php occ config:system:get trusted_domains --output=json"
-      register: nd_nextcloud_raw_trusted_domains
-      become: true
-      changed_when: false
-      failed_when: "nd_nextcloud_raw_trusted_domains.rc > 1"
-
-    - name: Store trusted domains.
-      set_fact:
-        nd_nextcloud_current_trusted_domains: "{{ nd_nextcloud_raw_trusted_domains.stdout }}"
-
-    - name: Set trusted domain(s) for Nextcloud install.
-      block:
-        # As long as we're using array indicies to add each domain (see next task),
-        # we basically MUST remove all of them (e.g. if there were originally three
-        # trusted_domains, and the new list consisted of two, we could wind up with
-        # an unexpected entry in the array.
-        - name: Remove trusted domains.
-          shell: "{{ nd_nextcloud_occ_prefix }} php occ config:system:delete trusted_domains"
-          when: "nd_nextcloud_current_trusted_domains != nd_nextcloud_trusted_domains"
-          changed_when: false
-
-        # I don't know if there's a better way to do this or not...
-        - name: Set specified trusted domains.
-          shell: "{{ nd_nextcloud_occ_prefix }} php occ config:system:set trusted_domains {{ index }} --value={{ domain }}"
-          loop: "{{ nd_nextcloud_trusted_domains }}"
-          loop_control:
-            loop_var: "domain"
-            index_var: "index"
-          when: "nd_nextcloud_current_trusted_domains != nd_nextcloud_trusted_domains"
-
-- name: Enable system encryption.
-  block:
-    - name: Check encryption status.
-      shell: "{{ nd_nextcloud_occ_prefix }} php occ encryption:status"
-      register: nd_nextcloud_encryption_status
-      changed_when: false
-
-    - name: Enable encryption.
-      shell: "{{ nd_nextcloud_occ_prefix }} php occ encryption:enable"
-      when: "'enabled: false' in nd_nextcloud_encryption_status.stdout"
-
-- name: Enable encryption module.
-  block:
-    - name: Check if module is already installed.
-      shell: "{{ nd_nextcloud_occ_prefix }} php occ app:list --output=json"
-      register: nd_nextcloud_raw_app_list
-      changed_when: false
-
-    - name: Store app list.
-      set_fact:
-        nd_nextcloud_app_list: "{{ nd_nextcloud_raw_app_list.stdout }}"
-
-    - name: Install encryption module.
-      shell: "{{ nd_nextcloud_occ_prefix }} php occ app:enable {{ nd_nextcloud_encryption_module }}"
-      when: "nd_nextcloud_encryption_module in nd_nextcloud_app_list.disabled"
+- name: Configure Nextcloud application before first run.
+  include_tasks:
+    file: "nd-configure-nextcloud.yml"
+    apply:
+      tags:
+        - configure-nextcloud
+        - nextcloud
+  tags:
+    - always

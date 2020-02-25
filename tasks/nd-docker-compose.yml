@@ -1,0 +1,55 @@
+---
+# tasks related to docker-compose for ansible-role-nextcloud-docker.
+
+- name: Create tmp directory for docker-compose files on remote.
+  file:
+    path: "{{ nd_docker_compose_project_dir }}"
+    state: directory
+  changed_when: false
+
+- name: Transfer and populate env file for database container.
+  template:
+    src: "{{ nd_docker_compose_project_src }}/db.env.j2"
+    dest: "{{ nd_docker_compose_project_dir }}/db.env"
+  changed_when: false
+  # The env contains the mysql password.
+  no_log: true
+
+- name: Create a list of env variables for Nextcloud.
+  set_fact:
+    nd_nextcloud_env_vars: >
+      {{ nd_nextcloud_env_vars
+      + (nd_use_redis is sameas true)|ternary(nd_redis_env_vars, [])
+      + (nd_use_letsencrypt is sameas true)|ternary(nd_letsencrypt_env_vars, []) }}
+  changed_when: false
+  # The list contains the redis password.
+  no_log: true
+
+- name: Transfer dockerfile to remote.
+  template:
+    src: "{{ nd_docker_compose_project_src }}/docker-compose.yml.j2"
+    dest: "{{ nd_docker_compose_project_dir }}/docker-compose.yml"
+  changed_when: false
+  # The dockerfile contains the mysql root password.
+  no_log: true
+
+- name: Copy Nextcloud dockerfile dependencies to remote.
+  copy:
+    src: "{{ nd_docker_compose_project_src }}/proxy"
+    dest: "{{ nd_docker_compose_project_dir }}"
+  changed_when: false
+
+- name: Build and start Nextcloud with docker-compose.
+  docker_compose:
+    project_src: "{{ nd_docker_compose_project_dir }}"
+    build: false
+    restarted: true
+  changed_when: false
+  register: nd_docker_compose_output
+
+- name: Remove tmp directory and docker-compose files on remote.
+  file:
+    path: "{{ nd_docker_compose_project_dir }}"
+    state: absent
+  changed_when: false
+  when: "nd_docker_compose_remove_project"

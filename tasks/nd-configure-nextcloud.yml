@@ -1,0 +1,61 @@
+---
+# tasks related to Nextcloud initial config for ansible-role-nextcloud-docker.
+
+- name: Check Nextcloud trusted domains and set them.
+  block:
+    - name: Check trusted domains.
+      shell: "{{ nd_nextcloud_occ_prefix }} php occ config:system:get trusted_domains --output=json"
+      register: nd_nextcloud_raw_trusted_domains
+      become: true
+      changed_when: false
+      failed_when: "nd_nextcloud_raw_trusted_domains.rc > 1"
+
+    - name: Store trusted domains.
+      set_fact:
+        nd_nextcloud_current_trusted_domains: "{{ nd_nextcloud_raw_trusted_domains.stdout }}"
+
+    - name: Set trusted domain(s) for Nextcloud install.
+      block:
+        # As long as we're using array indicies to add each domain (see next task),
+        # we basically MUST remove all of them (e.g. if there were originally three
+        # trusted_domains, and the new list consisted of two, we could wind up with
+        # an unexpected entry in the array.
+        - name: Remove trusted domains.
+          shell: "{{ nd_nextcloud_occ_prefix }} php occ config:system:delete trusted_domains"
+          when: "nd_nextcloud_current_trusted_domains != nd_nextcloud_trusted_domains"
+          changed_when: false
+
+        # I don't know if there's a better way to do this or not...
+        - name: Set specified trusted domains.
+          shell: "{{ nd_nextcloud_occ_prefix }} php occ config:system:set trusted_domains {{ index }} --value={{ domain }}"
+          loop: "{{ nd_nextcloud_trusted_domains }}"
+          loop_control:
+            loop_var: "domain"
+            index_var: "index"
+          when: "nd_nextcloud_current_trusted_domains != nd_nextcloud_trusted_domains"
+
+- name: Enable system encryption.
+  block:
+    - name: Check encryption status.
+      shell: "{{ nd_nextcloud_occ_prefix }} php occ encryption:status"
+      register: nd_nextcloud_encryption_status
+      changed_when: false
+
+    - name: Enable encryption.
+      shell: "{{ nd_nextcloud_occ_prefix }} php occ encryption:enable"
+      when: "'enabled: false' in nd_nextcloud_encryption_status.stdout"
+
+- name: Enable encryption module.
+  block:
+    - name: Check if module is already installed.
+      shell: "{{ nd_nextcloud_occ_prefix }} php occ app:list --output=json"
+      register: nd_nextcloud_raw_app_list
+      changed_when: false
+
+    - name: Store app list.
+      set_fact:
+        nd_nextcloud_app_list: "{{ nd_nextcloud_raw_app_list.stdout }}"
+
+    - name: Install encryption module.
+      shell: "{{ nd_nextcloud_occ_prefix }} php occ app:enable {{ nd_nextcloud_encryption_module }}"
+      when: "nd_nextcloud_encryption_module in nd_nextcloud_app_list.disabled"

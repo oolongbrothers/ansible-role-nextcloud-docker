@@ -1,0 +1,19 @@
+---
+# tasks related to Nextcloud installation for ansible-role-nextcloud-docker.
+
+- name: Check if Nextcloud is installed and install it if not.
+  block:
+    - name: Check status of Nextcloud installation.
+      shell: "{{ nd_nextcloud_occ_prefix }} php occ status --output=json | tail -n1"
+      register: nd_nextcloud_raw_status
+      changed_when: false
+
+    - name: Store status.
+      set_fact:
+        nd_nextcloud_status: "{{ nd_nextcloud_raw_status.stdout | from_json }}"
+
+    - name: Complete Nextcloud installation from cli.
+      shell: "{{ nd_nextcloud_occ_prefix }} {{ nd_nextcloud_occ_install }}"
+      become: true
+      when: "not nd_nextcloud_status.installed"
+      no_log: true
