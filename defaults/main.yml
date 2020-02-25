@@ -1,31 +1,43 @@
 ---
 # defaults file for ansible-role-nextcloud-docker
 
+# docker-compose variables.
 nd_docker_compose_project: "nextcloud"
 nd_docker_compose_project_dir: "/tmp/{{ nd_docker_compose_project }}"
 nd_docker_compose_project_src: "files/docker-compose"
+nd_nextcloud_env_filename: "nextcloud.env"
+nd_docker_compose_remove_project: true
 
 # Service options.
+nd_allow_insecure_defaults: false
 nd_use_letsencrypt: false
 nd_use_redis: true
+nd_domain_name: "example.local"
 
-nd_nextcloud_env_filename: "nextcloud.env"
+# Service passwords.
+nd_mariadb_root_password: "insecure"
+nd_mariadb_password: "insecure"
+nd_redis_host_password: "insecure"
+nd_nextcloud_admin_password: "insecure"
 
+# Service environment vars.
 nd_nextcloud_env_vars:
   - name: "VIRTUAL_HOST"
-    value: ""
+    value: "{{ nd_domain_name }}"
   - name: "MYSQL_HOST"
     value: "db"
 
 nd_redis_env_vars:
   - name: "REDIS_HOST"
     value: "redis"
-
-nd_mariadb_root_password: ""
+  - name: "REDIS_HOST_PORT"
+    value: "6379"
+  - name: "REDIS_HOST_PASSWORD"
+    value: "{{ nd_redis_host_password }}"
 
 nd_mariadb_env_vars:
   - name: "MYSQL_PASSWORD"
-    value: ""
+    value: "{{ nd_mariadb_password }}"
   - name: "MYSQL_DATABASE"
     value: "nextcloud"
   - name: "MYSQL_USER"
@@ -33,17 +45,19 @@ nd_mariadb_env_vars:
 
 nd_letsencrypt_env_vars:
   - name: "LETSENCRYPT_HOST"
-    value: ""
+    value: "{{ nd_domain_name }}"
   - name: "LETSENCRYPT_EMAIL"
-    value: ""
+    value: "admin@example.local"
+
+# Nextcloud related vars.
+nd_nextcloud_admin_user: "admin"
 
 nd_nextcloud_occ_prefix: >-
   docker exec --user www-data {{ nd_docker_compose_project }}_app_1
 
-nd_nextcloud_admin_user: ""
-nd_nextcloud_admin_password: ""
-
-nd_nextcloud_trusted_domains: []
+nd_nextcloud_trusted_domains:
+  - "localhost"
+  - "{{ nd_domain_name }}"
 
 nd_nextcloud_occ_install: >
   php occ maintenance:install
