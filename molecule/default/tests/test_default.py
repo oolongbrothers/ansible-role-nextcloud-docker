@@ -13,9 +13,9 @@ testinfra_hosts = testinfra.utils.ansible_runner.AnsibleRunner(
 
 
 @pytest.mark.parametrize('string,existence', [
-    ('MYSQL_DATABASE=nextcloud-database', True),
+    ('MYSQL_DATABASE=nextcloud', True),
     ('MYSQL_PASSWORD=mysql-password', True),
-    ('MYSQL_USER=nextcloud-user', True),
+    ('MYSQL_USER=nextcloud', True),
 ])
 def test_db_env_file(host, string, existence):
     f = host.file('/tmp/nextcloud/db.env')
@@ -26,12 +26,15 @@ def test_db_env_file(host, string, existence):
 
 
 @pytest.mark.parametrize('string,existence', [
-    ('VIRTUAL_HOST=instance', True),
-    ('MYSQL_HOST=db', True),
-    ('REDIS_HOST=redis', True),
     ('443', False),
     ('cert', False),
     ('letsencrypt', False),
+    ('MYSQL_HOST=db', True),
+    ('MYSQL_ROOT_PASSWORD=mysql-root-password', True),
+    ('REDIS_HOST=redis', True),
+    ('REDIS_HOST_PASSWORD=redis-host-password', True),
+    ('REDIS_HOST_PORT=6379', True),
+    ('VIRTUAL_HOST=instance', True),
 ])
 def test_docker_compose_file(host, string, existence):
     f = host.file('/tmp/nextcloud/docker-compose.yml')
