@@ -4,27 +4,11 @@
   become: true
   become_user: root
   vars:
-    nd_use_letsencrypt: false
-    nd_nextcloud_env_vars:
-      - name: "VIRTUAL_HOST"
-        value: "instance"
-      - name: "MYSQL_HOST"
-        value: "db"
-    nd_mariadb_root_password: "root-password"
-    nd_mariadb_env_vars:
-      - name: "MYSQL_DATABASE"
-        value: "nextcloud-database"
-      - name: "MYSQL_PASSWORD"
-        value: "mysql-password"
-      - name: "MYSQL_USER"
-        value: "nextcloud-user"
-    nd_redis_env_vars:
-      - name: "REDIS_HOST"
-        value: "redis"
-    nd_nextcloud_admin_user: "nc-admin-user"
-    nd_nextcloud_admin_password: "nc-admin-password"
-    nd_nextcloud_trusted_domains:
-      - "localhost"
-      - "instance"
+    nd_docker_compose_remove_project: false
+    nd_domain_name: "instance"
+    nd_mariadb_root_password: "mysql-root-password"
+    nd_mariadb_password: "mysql-password"
+    nd_redis_host_password: "redis-host-password"
+    nd_nextcloud_admin_password: "nextcloud-admin-password"
   roles:
     - role: ansible-role-nextcloud-docker
