@@ -5,13 +5,13 @@
 nd_docker_compose_project: "nextcloud"
 nd_docker_compose_project_dir: "/tmp/{{ nd_docker_compose_project }}"
 nd_docker_compose_project_src: "files/docker-compose"
-nd_nextcloud_env_filename: "nextcloud.env"
 nd_docker_compose_remove_project: true
 
 # Service options.
 nd_allow_insecure_defaults: false
 nd_use_letsencrypt: false
 nd_use_redis: true
+nd_use_cron: true
 nd_domain_name: "example.local"
 
 # Service passwords.
