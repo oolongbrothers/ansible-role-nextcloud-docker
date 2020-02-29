@@ -1,40 +1,53 @@
 ---
 # defaults file for ansible-role-nextcloud-docker
 
+#
 # docker-compose variables.
+#
 nd_docker_compose_project: "nextcloud"
 nd_docker_compose_project_dir: "/tmp/{{ nd_docker_compose_project }}"
 nd_docker_compose_project_src: "files/docker-compose"
 nd_docker_compose_remove_project: true
 
-# Service options.
+#
+# Role configuration options.
+#
 nd_allow_insecure_defaults: false
 nd_use_letsencrypt: false
 nd_use_redis: true
 nd_use_cron: true
 nd_domain_name: "example.local"
 
+#
 # Service passwords.
+#
 nd_mariadb_root_password: "insecure"
 nd_mariadb_password: "insecure"
 nd_redis_host_password: "insecure"
 nd_nextcloud_admin_password: "insecure"
 
-# Service environment vars.
-nd_nextcloud_env_vars:
-  - name: "VIRTUAL_HOST"
+#
+# Service environment vars and volumes.
+#
+
+#
+# Letsencrypt
+#
+# Env vars.
+nd_letsencrypt_env_vars:
+  - name: "LETSENCRYPT_HOST"
     value: "{{ nd_domain_name }}"
-  - name: "MYSQL_HOST"
-    value: "db"
+  - name: "LETSENCRYPT_EMAIL"
+    value: "admin@example.local"
 
-nd_redis_env_vars:
-  - name: "REDIS_HOST"
-    value: "redis"
-  - name: "REDIS_HOST_PORT"
-    value: "6379"
-  - name: "REDIS_HOST_PASSWORD"
-    value: "{{ nd_redis_host_password }}"
+# Volumes.
+nd_letsencrypt_required_volumes:
+  - "certs:/etc/nginx/certs:ro"
 
+#
+# MariaDB
+#
+# Env vars.
 nd_mariadb_env_vars:
   - name: "MYSQL_PASSWORD"
     value: "{{ nd_mariadb_password }}"
@@ -43,13 +56,53 @@ nd_mariadb_env_vars:
   - name: "MYSQL_USER"
     value: "nextcloud"
 
-nd_letsencrypt_env_vars:
-  - name: "LETSENCRYPT_HOST"
-    value: "{{ nd_domain_name }}"
-  - name: "LETSENCRYPT_EMAIL"
-    value: "admin@example.local"
+# Volumes.
+nd_mariadb_required_volumes:
+  - "db:/var/lib/mysql"
 
-# Nextcloud related vars.
+#
+# Nextcloud
+#
+# Env vars.
+nd_nextcloud_env_vars:
+  - name: "VIRTUAL_HOST"
+    value: "{{ nd_domain_name }}"
+  - name: "MYSQL_HOST"
+    value: "db"
+
+# Volumes.
+nd_nextcloud_required_volumes:
+  - "nextcloud:/var/www/html"
+  # - "/var/nextcloud/config:/var/www/html/config"
+  # - "/var/nextcloud/custom_apps:/var/www/html/custom_apps"
+  # - "/var/nextcloud/data:/var/www/html/data"
+  # - "/var/nextcloud/themes:/var/www/html/themes"
+
+#
+# Nginx Proxy
+#
+# Volumes.
+nd_nginx_proxy_required_volumes:
+  - "vhost.d:/etc/nginx/vhost.d"
+  - "html:/usr/share/nginx/html"
+  - "/var/run/docker.sock:/tmp/docker.sock:ro"
+  # - "/var/nextcloud/proxy/conf.d:/etc/nginx/conf.d"
+
+#
+# Redis
+#
+# Env vars.
+nd_redis_env_vars:
+  - name: "REDIS_HOST"
+    value: "redis"
+  - name: "REDIS_HOST_PORT"
+    value: "6379"
+  - name: "REDIS_HOST_PASSWORD"
+    value: "{{ nd_redis_host_password }}"
+
+#
+# Nextcloud install, setup related vars.
+#
 nd_nextcloud_admin_user: "admin"
 
 nd_nextcloud_occ_prefix: >-
