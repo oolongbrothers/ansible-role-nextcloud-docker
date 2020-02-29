@@ -58,6 +58,30 @@ def test_container_status(host, container):
     assert container in r.stdout
 
 
+@pytest.mark.parametrize('network', [
+    'nextcloud_default',
+    'nextcloud_proxy-tier',
+])
+def test_network_status(host, network):
+    c = 'docker network ls --quiet --format "{{.Name}}"'
+    r = host.run(c)
+
+    assert network in r.stdout
+
+
+@pytest.mark.parametrize('volume', [
+    'nextcloud_db',
+    'nextcloud_html',
+    'nextcloud_nextcloud',
+    'nextcloud_vhost.d',
+])
+def test_volume_status(host, volume):
+    c = 'docker volume ls --quiet'
+    r = host.run(c)
+
+    assert volume in r.stdout
+
+
 @pytest.mark.parametrize('trusted_domain', [
   'localhost',
   'instance',
