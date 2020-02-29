@@ -1,7 +1,35 @@
 ---
 # tasks related to docker-compose for ansible-role-nextcloud-docker.
 
-- name: Create tmp directory for docker-compose files on remote.
+- name: Work out lists of volumes for various containers.
+  block:
+    - name: Set Nextcloud volumes.
+      set_fact:
+        nd_nextcloud_volumes: "{{ nd_nextcloud_required_volumes|unique }}"
+
+    - name: Set MariaDB volumes.
+      set_fact:
+        nd_mariadb_volumes: "{{ nd_mariadb_required_volumes|unique }}"
+
+    - name: Set Nginx Proxy volumes.
+      set_fact:
+        nd_nginx_proxy_volumes: "{{ (nd_nginx_proxy_required_volumes + nd_use_letsencrypt|ternary(nd_letsencrypt_required_volumes, []))|unique }}"
+
+    - name: Set Letsencrypt helper volumes.
+      set_fact:
+        nd_letsencrypt_volumes: "{{ (nd_letsencrypt_required_volumes + nd_nginx_proxy_required_volumes)|unique }}"
+
+- name: Create a list of env variables for Nextcloud.
+  set_fact:
+    nd_nextcloud_env_vars: >
+      {{ nd_nextcloud_env_vars
+      + (nd_use_redis is sameas true)|ternary(nd_redis_env_vars, [])
+      + (nd_use_letsencrypt is sameas true)|ternary(nd_letsencrypt_env_vars, []) }}
+  changed_when: false
+  # The list contains the redis password.
+  no_log: true
+
+- name: Create directory for docker-compose files on remote.
   file:
     path: "{{ nd_docker_compose_project_dir }}"
     state: directory
@@ -13,16 +41,6 @@
     dest: "{{ nd_docker_compose_project_dir }}/db.env"
   changed_when: false
   # The env contains the mysql password.
-  no_log: true
-
-- name: Create a list of env variables for Nextcloud.
-  set_fact:
-    nd_nextcloud_env_vars: >
-      {{ nd_nextcloud_env_vars
-      + (nd_use_redis is sameas true)|ternary(nd_redis_env_vars, [])
-      + (nd_use_letsencrypt is sameas true)|ternary(nd_letsencrypt_env_vars, []) }}
-  changed_when: false
-  # The list contains the redis password.
   no_log: true
 
 - name: Transfer dockerfile to remote.
@@ -47,7 +65,7 @@
   changed_when: false
   register: nd_docker_compose_output
 
-- name: Remove tmp directory and docker-compose files on remote.
+- name: Remove docker-compose directory and files on remote.
   file:
     path: "{{ nd_docker_compose_project_dir }}"
     state: absent
