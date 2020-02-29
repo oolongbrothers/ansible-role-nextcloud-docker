@@ -6,7 +6,9 @@ services:
     command: --transaction-isolation=READ-COMMITTED --binlog-format=ROW
     restart: always
     volumes:
-      - db:/var/lib/mysql
+{% for mariadb_volume in nd_mariadb_volumes %}
+      - {{ mariadb_volume }}
+{% endfor %}
     environment:
       - MYSQL_ROOT_PASSWORD={{ nd_mariadb_root_password }}
     env_file:
@@ -22,7 +24,9 @@ services:
     image: nextcloud:apache
     restart: always
     volumes:
-      - nextcloud:/var/www/html
+{% for nextcloud_volume in nd_nextcloud_volumes %}
+      - {{ nextcloud_volume }}
+{% endfor %}
     environment:
 {% for variable in nd_nextcloud_env_vars %}
       - {{ variable.name }}={{ variable.value }}
@@ -43,7 +47,9 @@ services:
     image: nextcloud:apache
     restart: always
     volumes:
-      - nextcloud:/var/www/html
+{% for cron_volume in nd_nextcloud_required_volumes %}
+      - {{ cron_volume }}
+{% endfor %}
     entrypoint: /cron.sh
     depends_on:
       - db
@@ -65,12 +71,9 @@ services:
       com.github.jrcs.letsencrypt_nginx_proxy_companion.nginx_proxy: "true"
 {% endif %}
     volumes:
-{% if nd_use_letsencrypt %}
-      - certs:/etc/nginx/certs:ro
-{% endif %}
-      - vhost.d:/etc/nginx/vhost.d
-      - html:/usr/share/nginx/html
-      - /var/run/docker.sock:/tmp/docker.sock:ro
+{% for nginx_proxy_volume in nd_nginx_proxy_volumes %}
+      - {{ nginx_proxy_volume }}
+{% endfor %}
     networks:
       - proxy-tier
 
@@ -79,10 +82,9 @@ services:
     image: jrcs/letsencrypt-nginx-proxy-companion
     restart: always
     volumes:
-      - certs:/etc/nginx/certs
-      - vhost.d:/etc/nginx/vhost.d
-      - html:/usr/share/nginx/html
-      - /var/run/docker.sock:/var/run/docker.sock:ro
+{% for letsencrypt_volume in nd_letsencrypt_volumes %}
+      - {{ letsencrypt_volume }}
+{% endfor %}
     networks:
       - proxy-tier
     depends_on:
@@ -90,13 +92,11 @@ services:
 
 {% endif %}
 volumes:
-  db:
-  nextcloud:
-{% if nd_use_letsencrypt %}
-  certs:
+{% for volume in (nd_nextcloud_volumes + nd_nginx_proxy_volumes + nd_mariadb_volumes)|unique %}
+{% if volume|regex_search('^[a-z.]+:') %}
+  {{ volume|regex_replace('^([a-z.]+:).*$', '\\1') }}
 {% endif %}
-  vhost.d:
-  html:
+{% endfor %}
 
 networks:
   proxy-tier:
