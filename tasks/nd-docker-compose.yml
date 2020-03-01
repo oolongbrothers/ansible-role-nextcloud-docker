@@ -7,9 +7,9 @@
       set_fact:
         nd_nextcloud_volumes: "{{ nd_nextcloud_required_volumes|unique }}"
 
-    - name: Set MariaDB volumes.
+    - name: Set PostgreSQL volumes.
       set_fact:
-        nd_mariadb_volumes: "{{ nd_mariadb_required_volumes|unique }}"
+        nd_postgres_volumes: "{{ nd_postgres_required_volumes|unique }}"
 
     - name: Set Nginx Proxy volumes.
       set_fact:
@@ -40,7 +40,7 @@
     src: "{{ nd_docker_compose_project_src }}/db.env.j2"
     dest: "{{ nd_docker_compose_project_dir }}/db.env"
   changed_when: false
-  # The env contains the mysql password.
+  # The env contains the postgres password.
   no_log: true
 
 - name: Transfer dockerfile to remote.
@@ -48,7 +48,7 @@
     src: "{{ nd_docker_compose_project_src }}/docker-compose.yml.j2"
     dest: "{{ nd_docker_compose_project_dir }}/docker-compose.yml"
   changed_when: false
-  # The dockerfile contains the mysql root password.
+  # The dockerfile contains the Redis host password.
   no_log: true
 
 - name: Copy Nextcloud dockerfile dependencies to remote.

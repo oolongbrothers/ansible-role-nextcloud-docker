@@ -6,7 +6,6 @@
     - name: Check trusted domains.
       shell: "{{ nd_nextcloud_occ_prefix }} php occ config:system:get trusted_domains --output=json"
       register: nd_nextcloud_raw_trusted_domains
-      become: true
       changed_when: false
       failed_when: "nd_nextcloud_raw_trusted_domains.rc > 1"
 

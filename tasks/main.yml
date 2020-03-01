@@ -4,8 +4,7 @@
 - name: Abort if using insecure values.
   assert:
     that: >
-      (nd_mariadb_root_password != 'insecure'
-      and nd_mariadb_password != 'insecure'
+      (nd_postgres_password != 'insecure'
       and nd_redis_host_password != 'insecure'
       and nd_nextcloud_admin_password != 'insecure')
       or nd_allow_insecure_defaults
@@ -42,3 +41,12 @@
         - nextcloud
   tags:
     - always
+
+- name: Run post-install custom configuration commands.
+  include_tasks:
+    file: "{{ nd_configure_nextcloud_custom_file }}"
+    apply:
+      tags:
+        - configure-nextcloud
+        - custom-tasks
+        - nextcloud
