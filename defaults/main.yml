@@ -47,14 +47,22 @@ nd_letsencrypt_required_volumes:
 #
 # MariaDB
 #
+nd_mariadb_database: "nextcloud"
+nd_mariadb_host: "db"
+nd_mariadb_user: "nextcloud"
+
 # Env vars.
 nd_mariadb_env_vars:
+  - name: "MYSQL_DATABASE"
+    value: "{{ nd_mariadb_database }}"
+  - name: "MYSQL_HOST"
+    value: "{{ nd_mariadb_host }}"
   - name: "MYSQL_PASSWORD"
     value: "{{ nd_mariadb_password }}"
-  - name: "MYSQL_DATABASE"
-    value: "nextcloud"
+  - name: "MYSQL_ROOT_HOST"
+    value: "%"
   - name: "MYSQL_USER"
-    value: "nextcloud"
+    value: "{{ nd_mariadb_user }}"
 
 # Volumes.
 nd_mariadb_required_volumes:
@@ -114,7 +122,13 @@ nd_nextcloud_trusted_domains:
 
 nd_nextcloud_occ_install: >
   php occ maintenance:install
+  --database="mysql"
+  --database-host="{{ nd_mariadb_host }}"
+  --database-name="{{ nd_mariadb_database }}"
+  --database-user="{{ nd_mariadb_user }}"
+  --database-pass="{{ nd_mariadb_password }}"
   --admin-user="{{ nd_nextcloud_admin_user }}"
   --admin-pass="{{ nd_nextcloud_admin_password }}"
+
 
 nd_nextcloud_encryption_module: "encryption"
