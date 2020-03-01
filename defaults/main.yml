@@ -17,6 +17,7 @@ nd_use_letsencrypt: false
 nd_use_redis: true
 nd_use_cron: true
 nd_domain_name: "example.local"
+nd_configure_nextcloud_custom_file: "nd-configure-nextcloud-custom.yml"
 
 #
 # Service passwords.
