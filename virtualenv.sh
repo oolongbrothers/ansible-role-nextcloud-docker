@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/env bash
 
 set -e
 
@@ -18,7 +18,7 @@ rm -rf "$venv_path" && virtualenv -p python3 "$venv_path"
 source "$venv_activate"
 
 # Install packages as needed.
-pip install "testinfra" "docker" "molecule"
+./ci/scripts/python-dependencies.sh
 
 # Deactviate virtualenv within this process.
 "$venv_deactivate"
