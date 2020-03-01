@@ -1,11 +1,20 @@
 ---
 sudo: required
+
 language: python
+
 services:
   - docker
+
 before_install:
   - sudo apt-get -qq update
   - sudo apt-get install -o Dpkg::Options::="--force-confold" --force-yes -y docker-ce
+  - docker pull jrcs/letsencrypt-nginx-proxy-companion
+  - docker pull jwilder/nginx-proxy:alpine
+  - docker pull nextcloud:apache
+  - docker pull postgres:alpine
+  - docker pull redis:alpine
+
 script:
   # Install python dependencies.
   - ./ci/scripts/python-dependencies.sh
