@@ -42,11 +42,17 @@
   tags:
     - always
 
-- name: Run post-install custom configuration commands.
-  include_tasks:
-    file: "{{ nd_configure_nextcloud_custom_file }}"
-    apply:
-      tags:
-        - configure-nextcloud
-        - custom-tasks
-        - nextcloud
+- name: Pause, then run further commands.
+  block:
+    - name: Pause to wait for Nextcloud.
+      pause:
+        seconds: 60
+
+    - name: Run post-install custom configuration commands.
+      include_tasks:
+        file: "{{ nd_configure_nextcloud_custom_file }}"
+        apply:
+          tags:
+            - configure-nextcloud
+            - custom-tasks
+            - nextcloud
