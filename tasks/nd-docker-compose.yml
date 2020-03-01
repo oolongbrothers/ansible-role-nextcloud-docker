@@ -59,8 +59,8 @@
 
 - name: Build and start Nextcloud with docker-compose.
   docker_compose:
+    build: true
     project_src: "{{ nd_docker_compose_project_dir }}"
-    build: false
     restarted: true
   changed_when: false
   register: nd_docker_compose_output
