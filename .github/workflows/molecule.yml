@@ -1,8 +1,8 @@
 ---
 ---
 name: Molecule Test
-on:
-  push:
+
+on: push
 
 jobs:
   build:
