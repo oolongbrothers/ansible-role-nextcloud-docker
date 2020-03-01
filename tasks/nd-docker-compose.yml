@@ -5,11 +5,11 @@
   block:
     - name: Set Nextcloud volumes.
       set_fact:
-        nd_nextcloud_volumes: "{{ nd_nextcloud_required_volumes|unique }}"
+        nd_nextcloud_volumes: "{{ nd_nextcloud_required_volumes }}"
 
     - name: Set PostgreSQL volumes.
       set_fact:
-        nd_postgres_volumes: "{{ nd_postgres_required_volumes|unique }}"
+        nd_postgres_volumes: "{{ nd_postgres_required_volumes }}"
 
     - name: Set Nginx Proxy volumes.
       set_fact:
