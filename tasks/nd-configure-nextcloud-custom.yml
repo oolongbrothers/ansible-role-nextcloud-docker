@@ -1,0 +1,11 @@
+---
+# tasks for custom Nextcloud config for ansible-role-nextcloud-docker.
+
+- name: Check backgroundjobs_mode status.
+  shell: "{{ nd_nextcloud_occ_prefix }} php occ config:app:get core backgroundjobs_mode"
+  register: nd_nextcloud_backgroundjobs_mode
+  changed_when: false
+
+- name: Set backgroundjobs_mode to cron.
+  shell: "{{ nd_nextcloud_occ_prefix }} php occ config:app:set core backgroundjobs_mode --value=cron"
+  when: "nd_nextcloud_backgroundjobs_mode.stdout != 'cron'"
