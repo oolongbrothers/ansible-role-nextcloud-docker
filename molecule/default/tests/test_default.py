@@ -82,6 +82,19 @@ def test_volume_status(host, volume):
     assert volume in r.stdout
 
 
+@pytest.mark.parametrize('nextcloud_directory', [
+    'config',
+    'custom_apps',
+    'data',
+    'themes',
+])
+def test_nextcloud_volume_directory(host, nextcloud_directory):
+    c = 'ls -hal /var/nextcloud'
+    r = host.run(c)
+
+    assert nextcloud_directory in r.stdout
+
+
 @pytest.mark.parametrize('trusted_domain', [
   'localhost',
   'instance',
