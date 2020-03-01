@@ -10,4 +10,4 @@ script:
   # Install python dependencies.
   - ./ci/scripts/python-dependencies.sh
   # Replace with `molecule --debug test` for debugging.
-  - molecule test
+  - travis_retry molecule test
