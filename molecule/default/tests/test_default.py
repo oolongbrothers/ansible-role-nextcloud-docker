@@ -13,9 +13,9 @@ testinfra_hosts = testinfra.utils.ansible_runner.AnsibleRunner(
 
 
 @pytest.mark.parametrize('string,existence', [
-    ('MYSQL_DATABASE=nextcloud', True),
-    ('MYSQL_PASSWORD=mysql-password', True),
-    ('MYSQL_USER=nextcloud', True),
+    ('POSTGRES_DB=nextcloud', True),
+    ('POSTGRES_PASSWORD=postgres-password', True),
+    ('POSTGRES_USER=nextcloud', True),
 ])
 def test_db_env_file(host, string, existence):
     f = host.file('/tmp/nextcloud/db.env')
@@ -29,8 +29,7 @@ def test_db_env_file(host, string, existence):
     ('443', False),
     ('cert', False),
     ('letsencrypt', False),
-    ('MYSQL_HOST=db', True),
-    ('MYSQL_ROOT_PASSWORD=mysql-root-password', True),
+    ('POSTGRES_HOST=db', True),
     ('REDIS_HOST=redis', True),
     ('REDIS_HOST_PASSWORD=redis-host-password', True),
     ('REDIS_HOST_PORT=6379', True),
@@ -105,6 +104,16 @@ def test_trusted_domains(host, trusted_domain):
     r = host.run(c)
 
     assert trusted_domain in r.stdout
+
+
+@pytest.mark.parametrize('config_line', [
+  '\'dbtype\' => \'pgsql\','
+])
+def test_nextcloud_configuration(host, config_line):
+    c = 'cat /var/nextcloud/config/config.php'
+    r = host.run(c)
+
+    assert config_line in r.stdout
 
 
 def test_nextcloud_status(host):
