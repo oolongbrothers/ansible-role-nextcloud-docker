@@ -6,8 +6,8 @@ services:
 before_install:
   - sudo apt-get -qq update
   - sudo apt-get install -o Dpkg::Options::="--force-confold" --force-yes -y docker-ce
-install:
-  - pip install molecule docker testinfra==3.0.4
 script:
+  # Install python dependencies.
+  - ./ci/scripts/python-dependencies.sh
   # Replace with `molecule --debug test` for debugging.
   - molecule test
