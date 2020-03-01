@@ -21,8 +21,7 @@ nd_domain_name: "example.local"
 #
 # Service passwords.
 #
-nd_mariadb_root_password: "insecure"
-nd_mariadb_password: "insecure"
+nd_postgres_password: "insecure"
 nd_redis_host_password: "insecure"
 nd_nextcloud_admin_password: "insecure"
 
@@ -45,28 +44,26 @@ nd_letsencrypt_required_volumes:
   - "certs:/etc/nginx/certs:ro"
 
 #
-# MariaDB
+# PostgreSQL
 #
-nd_mariadb_database: "nextcloud"
-nd_mariadb_host: "db"
-nd_mariadb_user: "nextcloud"
+nd_postgres_database: "nextcloud"
+nd_postgres_host: "db"
+nd_postgres_user: "nextcloud"
 
 # Env vars.
-nd_mariadb_env_vars:
-  - name: "MYSQL_DATABASE"
-    value: "{{ nd_mariadb_database }}"
-  - name: "MYSQL_HOST"
-    value: "{{ nd_mariadb_host }}"
-  - name: "MYSQL_PASSWORD"
-    value: "{{ nd_mariadb_password }}"
-  - name: "MYSQL_ROOT_HOST"
-    value: "%"
-  - name: "MYSQL_USER"
-    value: "{{ nd_mariadb_user }}"
+nd_postgres_env_vars:
+  - name: "POSTGRES_DB"
+    value: "{{ nd_postgres_database }}"
+  - name: "POSTGRES_HOST"
+    value: "{{ nd_postgres_host }}"
+  - name: "POSTGRES_PASSWORD"
+    value: "{{ nd_postgres_password }}"
+  - name: "POSTGRES_USER"
+    value: "{{ nd_postgres_user }}"
 
 # Volumes.
-nd_mariadb_required_volumes:
-  - "db:/var/lib/mysql"
+nd_postgres_required_volumes:
+  - "db:/var/lib/postgresql/data"
 
 #
 # Nextcloud
@@ -75,7 +72,7 @@ nd_mariadb_required_volumes:
 nd_nextcloud_env_vars:
   - name: "VIRTUAL_HOST"
     value: "{{ nd_domain_name }}"
-  - name: "MYSQL_HOST"
+  - name: "POSTGRES_HOST"
     value: "db"
 
 # Volumes.
@@ -122,11 +119,11 @@ nd_nextcloud_trusted_domains:
 
 nd_nextcloud_occ_install: >
   php occ maintenance:install
-  --database="mysql"
-  --database-host="{{ nd_mariadb_host }}"
-  --database-name="{{ nd_mariadb_database }}"
-  --database-user="{{ nd_mariadb_user }}"
-  --database-pass="{{ nd_mariadb_password }}"
+  --database="pgsql"
+  --database-host="{{ nd_postgres_host }}"
+  --database-name="{{ nd_postgres_database }}"
+  --database-user="{{ nd_postgres_user }}"
+  --database-pass="{{ nd_postgres_password }}"
   --admin-user="{{ nd_nextcloud_admin_user }}"
   --admin-pass="{{ nd_nextcloud_admin_password }}"
 
