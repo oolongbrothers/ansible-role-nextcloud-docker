@@ -10,5 +10,11 @@
     nd_mariadb_password: "mysql-password"
     nd_redis_host_password: "redis-host-password"
     nd_nextcloud_admin_password: "nextcloud-admin-password"
+    nd_nextcloud_required_volumes:
+      - "nextcloud:/var/www/html"
+      - "/var/nextcloud/config:/var/www/html/config"
+      - "/var/nextcloud/custom_apps:/var/www/html/custom_apps"
+      - "/var/nextcloud/data:/var/www/html/data"
+      - "/var/nextcloud/themes:/var/www/html/themes"
   roles:
     - role: ansible-role-nextcloud-docker
