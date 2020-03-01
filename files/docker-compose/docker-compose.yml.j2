@@ -2,15 +2,12 @@ version: '3'
 
 services:
   db:
-    image: mariadb
-    command: --transaction-isolation=READ-COMMITTED --binlog-format=ROW
+    image: postgres:alpine
     restart: always
     volumes:
-{% for mariadb_volume in nd_mariadb_volumes %}
-      - {{ mariadb_volume }}
+{% for postgres_volume in nd_postgres_volumes %}
+      - {{ postgres_volume }}
 {% endfor %}
-    environment:
-      - MYSQL_ROOT_PASSWORD={{ nd_mariadb_root_password }}
     env_file:
       - db.env
 
@@ -92,7 +89,7 @@ services:
 
 {% endif %}
 volumes:
-{% for volume in (nd_nextcloud_volumes + nd_nginx_proxy_volumes + nd_mariadb_volumes)|unique %}
+{% for volume in (nd_nextcloud_volumes + nd_nginx_proxy_volumes + nd_postgres_volumes)|unique %}
 {% if volume|regex_search('^[a-z.]+:') %}
   {{ volume|regex_replace('^([a-z.]+:).*$', '\\1') }}
 {% endif %}
