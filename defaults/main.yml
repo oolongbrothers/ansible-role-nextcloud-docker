@@ -43,6 +43,7 @@ nd_letsencrypt_env_vars:
 # Volumes.
 nd_letsencrypt_required_volumes:
   - "certs:/etc/nginx/certs"
+  - "/var/run/docker.sock:/var/run/docker.sock:ro"
 
 #
 # PostgreSQL
