@@ -69,7 +69,11 @@ services:
 {% endif %}
     volumes:
 {% for nginx_proxy_volume in nd_nginx_proxy_volumes %}
+{% if nginx_proxy_volume|regex_search('certs$') %}
+      - {{ nginx_proxy_volume }}:ro
+{% else %}
       - {{ nginx_proxy_volume }}
+{% endif %}
 {% endfor %}
     networks:
       - proxy-tier

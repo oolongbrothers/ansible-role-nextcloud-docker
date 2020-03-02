@@ -13,7 +13,7 @@ nd_docker_compose_remove_project: true
 # Role configuration options.
 #
 nd_allow_insecure_defaults: false
-nd_use_letsencrypt: false
+nd_use_letsencrypt: true
 nd_use_redis: true
 nd_use_cron: true
 nd_domain_name: "example.local"
@@ -42,7 +42,7 @@ nd_letsencrypt_env_vars:
 
 # Volumes.
 nd_letsencrypt_required_volumes:
-  - "certs:/etc/nginx/certs:ro"
+  - "certs:/etc/nginx/certs"
 
 #
 # PostgreSQL

@@ -4,6 +4,7 @@
   become: true
   become_user: root
   vars:
+    nd_use_letsencrypt: false
     nd_docker_compose_remove_project: false
     nd_domain_name: "instance"
     nd_postgres_password: "postgres-password"
