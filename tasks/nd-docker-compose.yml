@@ -71,3 +71,68 @@
     state: absent
   changed_when: false
   when: "nd_docker_compose_remove_project"
+
+- name: Test status of containers.
+  block:
+    - name: Assert Nextcloud app container is up and running.
+      assert:
+        that:
+          - "app.nextcloud_app_1.state.status == 'running'"
+        success_msg: "Nextcloud app container running."
+        fail_msg: >
+          Nextcloud app container status was
+          '{{ app.nextcloud_app_1.state.status }}'
+          (should have been 'running').
+
+    - name: Assert Nextcloud cron container is up and running.
+      assert:
+        that:
+          - "cron.nextcloud_cron_1.state.status == 'running'"
+        success_msg: "Nextcloud cron container running."
+        fail_msg: >
+          Nextcloud cron container status was
+          '{{ cron.nextcloud_cron_1.state.status }}'
+          (should have been 'running').
+      when: "nd_use_cron"
+
+    - name: Assert Nextcloud Nginx proxy container is up and running.
+      assert:
+        that:
+          - "proxy.nextcloud_proxy_1.state.status == 'running'"
+        success_msg: "Nextcloud Nginx proxy container running."
+        fail_msg: >
+          Nextcloud Nginx proxy container status was
+          '{{ proxy.nextcloud_proxy_1.state.status }}'
+          (should have been 'running').
+
+    - name: Assert Nextcloud Postgres container is up and running.
+      assert:
+        that:
+          - "db.nextcloud_db_1.state.status == 'running'"
+        success_msg: "Nextcloud db container running."
+        fail_msg: >
+          Nextcloud db container status was
+          '{{ db.nextcloud_db_1.state.status }}'
+          (should have been 'running').
+
+    - name: Assert Nextcloud Redis container is up and running.
+      assert:
+        that:
+          - "redis.nextcloud_redis_1.state.status == 'running'"
+        success_msg: "Nextcloud Redis container running."
+        fail_msg: >
+          Nextcloud redis container status was
+          '{{ redis.nextcloud_redis_1.state.status }}'
+          (should have been 'running').
+      when: "nd_use_redis"
+
+    - name: Assert Nextcloud Letsencrypt container is up and running.
+      assert:
+        that:
+          - "letsencrypt.nextcloud_letsencrypt_1.state.status == 'running'"
+        success_msg: "Nextcloud Letsencrypt container running."
+        fail_msg: >
+          Nextcloud Letsencrypt container status was
+          '{{ letsencrypt.nextcloud_letsencrypt_1.state.status }}'
+          (should have been 'running').
+      when: "nd_use_letsencrypt"
