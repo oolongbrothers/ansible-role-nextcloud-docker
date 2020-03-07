@@ -52,3 +52,7 @@
             - configure-nextcloud
             - custom-tasks
             - nextcloud
+      tags:
+        - configure-nextcloud
+        - custom-tasks
+        - nextcloud
