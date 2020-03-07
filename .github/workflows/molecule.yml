@@ -19,6 +19,7 @@ jobs:
           python-version: ${{ matrix.python-version }}
       - name: Install dependencies
         run: |
+          ls -hal
           # sudo apt install docker
           sudo apt update
           sudo apt install apt-transport-https ca-certificates curl software-properties-common
