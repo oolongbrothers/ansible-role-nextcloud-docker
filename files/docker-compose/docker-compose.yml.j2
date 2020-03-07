@@ -79,7 +79,7 @@ services:
       - proxy-tier
 
 {% if nd_use_letsencrypt %}
-  letsencrypt-companion:
+  letsencrypt:
     image: jrcs/letsencrypt-nginx-proxy-companion
     restart: always
     volumes:
