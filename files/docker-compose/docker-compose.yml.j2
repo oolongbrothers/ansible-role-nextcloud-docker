@@ -28,6 +28,10 @@ services:
 {% for variable in nd_nextcloud_env_vars %}
       - {{ variable.name }}={{ variable.value }}
 {% endfor %}
+{% if not nd_use_proxy %}
+    ports:
+      - 80:80
+{% endif %}
     env_file:
       - db.env
     depends_on:
@@ -36,7 +40,9 @@ services:
       - redis
 {% endif %}
     networks:
+{% if nd_use_proxy %}
       - proxy-tier
+{% endif %}
       - default
 
 {% if nd_use_cron %}
@@ -55,6 +61,7 @@ services:
 {% endif %}
 {% endif %}
 
+{% if nd_use_proxy %}
   proxy:
     build: ./proxy
     restart: always
@@ -92,12 +99,15 @@ services:
       - proxy
 
 {% endif %}
+{% endif %}
 volumes:
-{% for volume in (nd_nextcloud_volumes + nd_nginx_proxy_volumes + nd_postgres_volumes)|unique %}
+{% for volume in (nd_nextcloud_volumes + (nd_nginx_proxy_volumes if nd_use_proxy else []) + nd_postgres_volumes)|unique %}
 {% if volume|regex_search('^[a-z.]+:') %}
   {{ volume|regex_replace('^([a-z.]+:).*$', '\\1') }}
 {% endif %}
 {% endfor %}
 
+{% if nd_use_proxy %}
 networks:
   proxy-tier:
+{% endif %}

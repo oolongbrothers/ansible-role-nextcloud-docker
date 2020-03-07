@@ -13,6 +13,7 @@ nd_docker_compose_remove_project: true
 # Role configuration options.
 #
 nd_allow_insecure_defaults: false
+nd_use_proxy: true
 nd_use_letsencrypt: true
 nd_use_redis: true
 nd_use_cron: true
