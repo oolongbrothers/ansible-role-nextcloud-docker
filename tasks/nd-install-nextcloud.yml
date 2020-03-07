@@ -10,6 +10,10 @@
 
 - name: Check if Nextcloud is installed and install it if not.
   block:
+    - name: Pause to wait for Nextcloud.
+      pause:
+        seconds: 60
+
     - name: Check status of Nextcloud installation.
       shell: "{{ nd_nextcloud_occ_prefix }} php occ status --output=json | tail -n1"
       register: nd_nextcloud_raw_status
@@ -24,3 +28,4 @@
       become: true
       when: "not nd_nextcloud_status.installed"
       no_log: true
+    
