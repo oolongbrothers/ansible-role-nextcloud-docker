@@ -24,16 +24,8 @@
           when: "nd_nextcloud_current_trusted_domains != nd_nextcloud_trusted_domains"
           changed_when: false
 
-        # I don't know if there's a better way to do this or not...
-        - name: Set specified trusted domains.
-          shell: "{{ nd_nextcloud_occ_prefix }} php occ config:system:set trusted_domains {{ index }} --value={{ domain }}"
-          loop: "{{ nd_nextcloud_trusted_domains }}"
-          loop_control:
-            loop_var: "domain"
-            index_var: "index"
-          when: "nd_nextcloud_current_trusted_domains != nd_nextcloud_trusted_domains"
-
 - name: Enable system encryption.
+  when: nd_nextcloud_encryption_enabled
   block:
     - name: Check encryption status.
       shell: "{{ nd_nextcloud_occ_prefix }} php occ encryption:status"
@@ -45,6 +37,7 @@
       when: "'enabled: false' in nd_nextcloud_encryption_status.stdout"
 
 - name: Enable encryption module.
+  when: nd_nextcloud_encryption_enabled
   block:
     - name: Check if module is already installed.
       shell: "{{ nd_nextcloud_occ_prefix }} php occ app:list --output=json"
