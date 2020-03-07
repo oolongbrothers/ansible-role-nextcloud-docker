@@ -1,6 +1,6 @@
 ---
 name: Molecule Test
-on: [push, commit]
+on: [push]
 jobs:
   test:
     runs-on: ubuntu-latest
