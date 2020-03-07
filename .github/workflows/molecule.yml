@@ -27,7 +27,7 @@ jobs:
           apt-cache policy docker-ce
           sudo apt install docker-ce
           python3 -m pip install --upgrade pip
-          python3 -m pip install -r requirements.txt
+          ./ci/scripts/python-dependencies.sh
       - name: Test with molecule
         run: |
           molecule test

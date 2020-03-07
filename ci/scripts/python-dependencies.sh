@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-pip3 install \
+python3 -m pip install \
   "ansible-lint" \
   "docker" \
   "flake8" \
