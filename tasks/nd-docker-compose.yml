@@ -104,6 +104,7 @@
           Nextcloud Nginx proxy container status was
           '{{ proxy.nextcloud_proxy_1.state.status }}'
           (should have been 'running').
+      when: "nd_use_proxy"
 
     - name: Assert Nextcloud Postgres container is up and running.
       assert:
@@ -135,4 +136,4 @@
           Nextcloud Letsencrypt container status was
           '{{ letsencrypt.nextcloud_letsencrypt_1.state.status }}'
           (should have been 'running').
-      when: "nd_use_letsencrypt"
+      when: "nd_use_proxy and nd_use_letsencrypt"
