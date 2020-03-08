@@ -122,13 +122,13 @@ nd_nextcloud_trusted_domains:
 
 nd_nextcloud_occ_install: >
   php occ maintenance:install
-  --database="pgsql"
-  --database-host="{{ nd_postgres_host }}"
-  --database-name="{{ nd_postgres_database }}"
-  --database-user="{{ nd_postgres_user }}"
-  --database-pass="{{ nd_postgres_password }}"
-  --admin-user="{{ nd_nextcloud_admin_user }}"
-  --admin-pass="{{ nd_nextcloud_admin_password }}"
+  --database='pgsql'
+  --database-host='{{ nd_postgres_host }}'
+  --database-name='{{ nd_postgres_database }}'
+  --database-user='{{ nd_postgres_user }}'
+  --database-pass='{{ nd_postgres_password }}'
+  --admin-user='{{ nd_nextcloud_admin_user }}'
+  --admin-pass='{{ nd_nextcloud_admin_password }}'
 
 nd_nextcloud_encryption_enabled: false
 nd_nextcloud_encryption_module: "encryption"
